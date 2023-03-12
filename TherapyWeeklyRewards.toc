@@ -1,0 +1,8 @@
+## Interface: 100005
+## Title: |cff33937fTherapy|r Weekly Rewards
+## Version: 1.02
+## Author: River
+## Notes: Data broker for weekly activities progress.
+## DefaultState: Enabled
+
+TherapyWeeklyRewards.lua
