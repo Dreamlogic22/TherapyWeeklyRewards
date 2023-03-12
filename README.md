@@ -6,3 +6,12 @@ Therapy Weekly Rewards is a data broker that lets you track your weekly progress
 
 Here's how it looks as an ElvUI DataText:
 
+![ElvUI](https://github.com/Dreamlogic22/TherapyWeeklyRewards/blob/master/assets/ElvUI.png?raw=true)
+
+Here's how it looks running in Titan Panel:
+
+![Titan Panel](https://github.com/Dreamlogic22/TherapyWeeklyRewards/blob/master/assets/TitanPanel.png?raw=true)
+
+Clicking on the display will open your Great Vault for viewing.
+
+Please let me know if you have any problems setting it up or running it by reporting an issue.  Thanks!
