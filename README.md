@@ -8,6 +8,8 @@ Here's how it looks as an ElvUI DataText:
 
 ![ElvUI](https://github.com/Dreamlogic22/TherapyWeeklyRewards/blob/master/assets/ElvUI.png?raw=true)
 
+*ElvUI Users*: Depending on your chosen color theme, you may benefit from configuring a few options. Open ElvUI Options (/ec) and choose the "Data Texts" section, and go into "Customization".  Look for LDB: Weekly Rewards and tick the boxes next to "Show Label" and "Use Value Color".
+
 Here's how it looks running in Titan Panel:
 
 ![Titan Panel](https://github.com/Dreamlogic22/TherapyWeeklyRewards/blob/master/assets/TitanPanel.png?raw=true)
