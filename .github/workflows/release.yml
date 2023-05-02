@@ -2,8 +2,13 @@ name: Release
 
 on:
   push:
+    branches:
+      - master
     tags:
       - '**'
+    paths-ignore:
+      - '.github/**'
+      - 'assets'
 
 jobs:
   release:
@@ -12,9 +17,15 @@ jobs:
       WAGO_API_TOKEN:${{ secrets.WAGO_API_TOKEN }}
       GITHUB_OAUTH:${{ secrets.GITHUB_TOKEN }}
       
-      - name:Clone project
-        uses:actions/checkout@v3
-        with:fetch-depth:0
+    steps:
+      - name: Checkout addon
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name:Release
-        uses:BigWigsMods/packager@v2
+      - name: Release
+        uses: BigWigsMods/packager@v2
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          WAGO_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
