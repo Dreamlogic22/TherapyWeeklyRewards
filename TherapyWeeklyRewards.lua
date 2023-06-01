@@ -1,5 +1,7 @@
 local WeeklyRewards = CreateFrame("Frame")
 
+local Noop = function() end
+
 local function Click()
     if InCombatLockdown() then return end
 
@@ -98,8 +100,8 @@ function WeeklyRewards:Enable()
             label = "Weekly Rewards",
             text = WeeklyRewards.ValueColor .. "N/A|r",
             icon = [[Interface\AddOns\TherapyWeeklyRewards\Icons\Vault]],
-            OnClick = WeeklyRewards.Eligible and Click,
-            OnTooltipShow = WeeklyRewards.Eligible and OnEnter
+            OnClick = WeeklyRewards.Eligible and Click or Noop,
+            OnTooltipShow = WeeklyRewards.Eligible and OnEnter or Noop
         })
     end
 
