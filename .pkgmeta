@@ -1,4 +1,4 @@
-package-as: TherapyMagicMarker
+package-as: TherapyWeeklyRewards
 
 ignore:
   - .vscode
