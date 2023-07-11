@@ -1,8 +1,10 @@
-## Interface: 100100
+## Interface: 100105
 ## Title: |cff33937fTherapy|r Weekly Rewards
 ## Version: 1.02
 ## Author: River
 ## Notes: Data broker for weekly activities progress.
 ## DefaultState: Enabled
+## X-Curse-Project-ID: 837049
+## X-Wago-ID: BKpqzvGE
 
 TherapyWeeklyRewards.lua
