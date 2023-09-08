@@ -1,16 +1,16 @@
 **Version 1.03**
 
-### July 11, 2023
-* Update TOC.
+### September 5, 2023
+* Update TOC for 10.1.7.
 
 ### July 11, 2023
-* Update TOC.
+* Update TOC for 10.1.5.
 
 ### May 2, 2023
-* Update TOC.
+* Update TOC for 10.1.0.
 
 ### March 21, 2023
-* Update TOC.
+* Update TOC for 10.0.7.
 
 ### March 12, 2023
 * Fix a display issue with available raid rewards not reporting the correct instance.
