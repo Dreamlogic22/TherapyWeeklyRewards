@@ -1,4 +1,4 @@
-## Interface: 100107
+## Interface: 100200
 ## Title: |cff33937fTherapy|r Weekly Rewards
 ## Version: 1.03
 ## Author: River
