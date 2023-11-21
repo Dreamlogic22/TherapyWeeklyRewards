@@ -1,4 +1,8 @@
-**Version 1.03**
+**Version 1.1**
+
+### November 23, 2023
+* Fix leaking global.
+* Updated reward display for Mythic Plus to show the keystone level. Closes [#1](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/1#issue-2003437222).
 
 ### November 7, 2023
 * Update TOC for 10.2.0.
@@ -16,6 +20,6 @@
 * Update TOC for 10.0.7.
 
 ### March 12, 2023
+* Collecting rewards from the Vault should now instantly refresh the display.
 * Fix a display issue with available raid rewards not reporting the correct instance.
 * Remove an unwanted dependency on ElvUI
-* Collecting rewards from the Vault should now instantly refresh the display.

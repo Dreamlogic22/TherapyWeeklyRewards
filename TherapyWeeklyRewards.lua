@@ -1,18 +1,36 @@
-local WeeklyRewards = CreateFrame("Frame")
+--[[--------------------------------------------------------------------
+
+    Therapy Weekly Rewards 1.1 (November 20, 2023)
+
+----------------------------------------------------------------------]]
+
+local _, WeeklyRewards = ...
+
+LibStub("AceEvent-3.0"):Embed(WeeklyRewards)
+
+local Broker
+local ValueColor = "ffffffff"
 
 local Noop = function() end
+
+local Color = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
+if Color then
+    ValueColor = Color.colorStr
+end
+
+local Eligible = false
 
 local function Click()
     if InCombatLockdown() then return end
 
-    if IsAddOnLoaded("Blizzard_WeeklyRewards") then
+    if C_AddOns.IsAddOnLoaded("Blizzard_WeeklyRewards") then
         if WeeklyRewardsFrame:IsShown() then
             WeeklyRewardsFrame:Hide()
         else
             WeeklyRewardsFrame:Show()
         end
     else
-        LoadAddOn("Blizzard_WeeklyRewards")
+        C_AddOns.LoadAddOn("Blizzard_WeeklyRewards")
         WeeklyRewardsFrame:Show()
     end
 end
@@ -37,13 +55,24 @@ local function OnEnter(tooltip)
 end
 
 local function Update()
+    -- if event == "PLAYER_ENTERING_WORLD" then
+    --     print("In Update")
+
+    --     GetEligiblity()
+
+    --     if Eligible then
+    --         Registry:UnregisterEvent("PLAYER_ENTERING_WORLD")
+    --     end
+    -- end
+
     C_Timer.After(1, function()
-        if WeeklyRewards.Eligible then
+        if Eligible then
             WeeklyRewards.RewardsAvailable = C_WeeklyRewards.HasAvailableRewards()
 
             if WeeklyRewards.RewardsAvailable then
                 Broker.label = nil
                 Broker.text = "|cff00ccffRewards Available!|r"
+
                 return
             else
                 Broker.label = "Weekly Rewards"
@@ -71,7 +100,7 @@ local function Update()
                     if Row.unlocked then
                         if activity.type == Enum.WeeklyRewardChestThresholdType.Raid then
                             Row.textRight = DifficultyUtil.GetDifficultyName(activity.level)
-                        elseif activity.type == Enum.WeeklyRewardChestThresholdType.MythicPlus then
+                        elseif activity.type == Enum.WeeklyRewardChestThresholdType.Activities then
                             Row.textRight = format(WEEKLY_REWARDS_MYTHIC, activity.level)
                         elseif activity.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
                             Row.textRight = PVPUtil.GetTierName(activity.level)
@@ -84,44 +113,42 @@ local function Update()
                 end
             end
 
-            Broker.text = WeeklyRewards.ValueColor .. format(GENERIC_FRACTION_STRING, WeeklyRewards.Earned, 9) .. "|r"
+            Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, WeeklyRewards.Earned, 9), ValueColor)
         end
     end)
 end
 
-function WeeklyRewards:Enable()
-    self.Eligible = IsLevelAtEffectiveMaxLevel(UnitLevel("player")) and not C_WeeklyRewards.IsWeeklyChestRetired()
-    self.ValueColor = "|cffffffff"
+local function Initialize()
+    Eligible = IsLevelAtEffectiveMaxLevel(UnitLevel("player")) and not C_WeeklyRewards.IsWeeklyChestRetired()
 
-    local LDB = LibStub("LibDataBroker-1.1")
-    if LDB then
-        Broker = LDB:NewDataObject("WeeklyRewards", {
-            type = "data source",
-            label = "Weekly Rewards",
-            text = WeeklyRewards.ValueColor .. "N/A|r",
-            icon = [[Interface\AddOns\TherapyWeeklyRewards\Icons\Vault]],
-            OnClick = WeeklyRewards.Eligible and Click or Noop,
-            OnTooltipShow = WeeklyRewards.Eligible and OnEnter or Noop
-        })
-    end
+    if Eligible then
+        WeeklyRewards:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
-    if self.Eligible then
-        for i = 1, 3 do
-            self[i] = CreateFrame("Frame")
-            self[i].Header = (i == 1 and MYTHIC_DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
-            self[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_MYTHIC) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
-            self[i][1] = CreateFrame("Frame")
-            self[i][2] = CreateFrame("Frame")
-            self[i][3] = CreateFrame("Frame")
+        local LDB = LibStub("LibDataBroker-1.1")
+        if LDB then
+            ---@diagnostic disable-next-line: missing-fields
+            Broker = LDB:NewDataObject("WeeklyRewards", {
+                type = "data source",
+                label = "Weekly Rewards",
+                text = WrapTextInColorCode("N/A", ValueColor),
+                icon = [[Interface\AddOns\TherapyWeeklyRewards\Icons\Vault]],
+                OnClick = Eligible and Click or Noop,
+                OnTooltipShow = Eligible and OnEnter or Noop
+            })
         end
 
-        self:RegisterEvent("WEEKLY_REWARDS_UPDATE")
-        self:SetScript("OnEvent", Update)
+        for i = 1, 3 do
+            WeeklyRewards[i] = CreateFrame("Frame")
+            WeeklyRewards[i].Header = (i == 1 and MYTHIC_DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
+            WeeklyRewards[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_MYTHIC) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
+            WeeklyRewards[i][1] = CreateFrame("Frame")
+            WeeklyRewards[i][2] = CreateFrame("Frame")
+            WeeklyRewards[i][3] = CreateFrame("Frame")
+        end
 
         Update()
     end
-
-    self.Enable = nil
 end
 
-WeeklyRewards:Enable()
+WeeklyRewards:RegisterEvent("PLAYER_ENTERING_WORLD", Initialize)
+WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", Update)
