@@ -65,14 +65,13 @@ local function Update()
     --     end
     -- end
 
-    C_Timer.After(1, function()
+    C_Timer.After(1.5, function()
         if Eligible then
             WeeklyRewards.RewardsAvailable = C_WeeklyRewards.HasAvailableRewards()
 
             if WeeklyRewards.RewardsAvailable then
                 Broker.label = nil
                 Broker.text = "|cff00ccffRewards Available!|r"
-
                 return
             else
                 Broker.label = "Weekly Rewards"
