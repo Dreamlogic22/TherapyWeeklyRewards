@@ -14,5 +14,4 @@ Libs\LibDataBroker-1.1.lua
 Libs\LibStub.lua
 Libs\TaintLess.xml
 
-Core\Init.lua
-# TherapyWeeklyRewards.lua
+WeeklyRewards.lua

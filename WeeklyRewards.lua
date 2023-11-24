@@ -1,13 +1,16 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.1 (November 21, 2023)
+    Therapy Weekly Rewards 1.1 (November 24, 2023)
 
 ----------------------------------------------------------------------]]
 
 local _, WeeklyRewards = ...
 
-local LDB = LibStub("LibDataBroker-1.1")
+local REWARDS_AVAILABLE = "Awards Available!"
+local WEEKLY_REWARDS = "Weekly Rewards"
+local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges available."
 
+local CatalystCharges = 0
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
 WeeklyRewards = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
@@ -24,14 +27,20 @@ end
 local function HasAvailableRewards() return C_WeeklyRewards.HasAvailableRewards() and C_WeeklyRewards.CanClaimRewards() end
 
 ---@diagnostic disable-next-line: missing-fields
-local Broker = LDB:NewDataObject("WeeklyRewards", {
+local Broker = LibStub("LibDataBroker-1.1"):NewDataObject("WeeklyRewards", {
     type = "data source",
-    label = "Weekly Rewards",
+    label = WEEKLY_REWARDS,
     text = WrapTextInColorCode("N/A", ValueColor),
     icon = [[Interface\AddOns\TherapyWeeklyRewards\Icons\Vault]],
     OnClick = function() end,
     OnTooltipShow = function() end
 })
+
+local function UpdateCatalyst(_, currencyType, quantity)
+    if currencyType == 2167 then
+        CatalystCharges = quantity
+    end
+end
 
 local function Click()
     if InCombatLockdown() then return end
@@ -51,7 +60,7 @@ end
 local function OnEnter(tooltip)
     if InCombatLockdown() or HasAvailableRewards() then return end
 
-    tooltip:AddLine("Weekly Rewards")
+    tooltip:AddLine(WEEKLY_REWARDS)
     tooltip:AddLine(" ")
 
     for i = 1, #WeeklyRewards do
@@ -63,6 +72,9 @@ local function OnEnter(tooltip)
 
         tooltip:AddLine(" ")
     end
+
+    tooltip:AddLine(format(CATALYST_CHARGES, CatalystCharges))
+    tooltip:AddLine(" ")
 
     tooltip:AddLine(WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS, 1, 1, 1)
 end
@@ -76,11 +88,11 @@ local function Update(event)
 
     if HasAvailableRewards() then
         Broker.label = nil
-        Broker.text = "|cff00ccffRewards Available!|r"
+        Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(REWARDS_AVAILABLE)
 
         return
     else
-        Broker.label = "Weekly Rewards"
+        Broker.label = WEEKLY_REWARDS
     end
 
     local Earned = 0
@@ -97,7 +109,7 @@ local function Update(event)
             Row.color = { r = 0.5, g = 0.5, b = 0.5 }
             Row.level = activity.level
             Row.progress = activity.progress
-            Row.textLeft = format(WeeklyRewards[activity.type].ThresholdString or "Unknown", activity.threshold)
+            Row.textLeft = format(WeeklyRewards[activity.type].ThresholdString or UNKNOWN, activity.threshold)
             Row.textRight = format(GENERIC_FRACTION_STRING, activity.progress, activity.threshold)
             Row.threshold = activity.threshold
             Row.unlocked = activity.progress >= activity.threshold
@@ -124,5 +136,16 @@ local function Update(event)
     Broker.OnTooltipShow = OnEnter
 end
 
+--[[
+
+    todo:
+
+    AddOnComparent support
+    Minimap icon support
+
+]]
+
+
+WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
 WeeklyRewards:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
 WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", Update)
