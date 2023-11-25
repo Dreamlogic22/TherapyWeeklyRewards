@@ -136,16 +136,6 @@ local function Update(event)
     Broker.OnTooltipShow = OnEnter
 end
 
---[[
-
-    todo:
-
-    AddOnComparent support
-    Minimap icon support
-
-]]
-
-
 WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
 WeeklyRewards:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
 WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", Update)

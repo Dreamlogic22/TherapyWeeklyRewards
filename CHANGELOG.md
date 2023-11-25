@@ -1,7 +1,7 @@
 **Version 1.1**
 
 ### November 23, 2023
-* Fix leaking global.
+* Added Catalyst charge display
 * Updated reward display for Mythic Plus to show the keystone level. Closes [#1](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/1#issue-2003437222).
 
 ### November 7, 2023
