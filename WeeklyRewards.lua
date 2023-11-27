@@ -139,3 +139,17 @@ end
 WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
 WeeklyRewards:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
 WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", Update)
+
+-- addon compartment globals
+function TherapyWeeklyRewards_OnAddonCompartmentClick() Click() end
+
+function TherapyWeeklyRewards_OnAddonCompartmentEnter(_, button)
+    GameTooltip:ClearLines()
+    GameTooltip:SetOwner(button, "ANCHOR_CURSOR")
+
+    OnEnter(GameTooltip)
+
+    GameTooltip:Show()
+end
+
+function TherapyWeeklyRewards_OnAddonCompartmentLeave() GameTooltip:Hide() end

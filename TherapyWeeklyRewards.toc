@@ -2,6 +2,9 @@
 ## Title: |cff33937fTherapy|r Weekly Rewards
 ## Version: 1.1
 ## Author: River
+## AddonCompartmentFunc: TherapyWeeklyRewards_OnAddonCompartmentClick
+## AddonCompartmentFuncOnEnter: TherapyWeeklyRewards_OnAddonCompartmentEnter
+## AddonCompartmentFuncOnLeave: TherapyWeeklyRewards_OnAddonCompartmentLeave
 ## Notes: Data broker for weekly activities progress.
 ## DefaultState: Enabled
 ## IconTexture: Interface\AddOns\Therapy\Logo

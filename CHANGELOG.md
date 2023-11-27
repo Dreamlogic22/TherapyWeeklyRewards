@@ -2,6 +2,7 @@
 
 ### November 23, 2023
 * Added Catalyst charge display
+* Blizzard Addon Compartment support
 * Updated reward display for Mythic Plus to show the keystone level. Closes [#1](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/1#issue-2003437222).
 
 ### November 7, 2023
