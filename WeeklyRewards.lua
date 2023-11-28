@@ -6,9 +6,9 @@
 
 local _, WeeklyRewards = ...
 
-local REWARDS_AVAILABLE = "Awards Available!"
+local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges; available."
+local REWARDS_AVAILABLE = "Rewards Available!"
 local WEEKLY_REWARDS = "Weekly Rewards"
-local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges available."
 
 local CatalystCharges = 0
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
@@ -24,7 +24,8 @@ for i = 1, 3 do
     WeeklyRewards[i][3] = CreateFrame("Frame")
 end
 
-local function HasAvailableRewards() return C_WeeklyRewards.HasAvailableRewards() and C_WeeklyRewards.CanClaimRewards() end
+local function GetCatalystCharges() return C_CurrencyInfo.GetCurrencyInfo(2796).quantity end
+local function HasAvailableRewards() return C_WeeklyRewards.HasAvailableRewards() end
 
 ---@diagnostic disable-next-line: missing-fields
 local Broker = LibStub("LibDataBroker-1.1"):NewDataObject("WeeklyRewards", {
@@ -36,9 +37,9 @@ local Broker = LibStub("LibDataBroker-1.1"):NewDataObject("WeeklyRewards", {
     OnTooltipShow = function() end
 })
 
-local function UpdateCatalyst(_, currencyType, quantity)
-    if currencyType == 2167 then
-        CatalystCharges = quantity
+local function UpdateCatalyst(_, currencyType)
+    if currencyType == 2796 then
+        CatalystCharges = GetCatalystCharges()
     end
 end
 
@@ -80,60 +81,63 @@ local function OnEnter(tooltip)
 end
 
 local function Update(event)
-    if event == "PLAYER_ENTERING_WORLD" then
-        WeeklyRewards:UnregisterEvent("PLAYER_ENTERING_WORLD")
-    end
-
-    if not IsLevelAtEffectiveMaxLevel(UnitLevel("player")) or C_WeeklyRewards.IsWeeklyChestRetired() then return end
-
-    if HasAvailableRewards() then
-        Broker.label = nil
-        Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(REWARDS_AVAILABLE)
-
-        return
-    else
-        Broker.label = WEEKLY_REWARDS
-    end
-
-    local Earned = 0
-
-    local ActivityInfo = C_WeeklyRewards.GetActivities()
-    if ActivityInfo and #ActivityInfo > 0 then
-        if not WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
-            WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or WEEKLY_REWARDS_THRESHOLD_RAID
+    C_Timer.After(1, function()
+        if event == "PLAYER_ENTERING_WORLD" then
+            CatalystCharges = GetCatalystCharges()
+            WeeklyRewards:UnregisterEvent("PLAYER_ENTERING_WORLD")
         end
 
-        for _, activity in ipairs(ActivityInfo) do
-            local Row = WeeklyRewards[activity.type][activity.index]
+        if not IsLevelAtEffectiveMaxLevel(UnitLevel("player")) or C_WeeklyRewards.IsWeeklyChestRetired() then return end
 
-            Row.color = { r = 0.5, g = 0.5, b = 0.5 }
-            Row.level = activity.level
-            Row.progress = activity.progress
-            Row.textLeft = format(WeeklyRewards[activity.type].ThresholdString or UNKNOWN, activity.threshold)
-            Row.textRight = format(GENERIC_FRACTION_STRING, activity.progress, activity.threshold)
-            Row.threshold = activity.threshold
-            Row.unlocked = activity.progress >= activity.threshold
+        if HasAvailableRewards() then
+            Broker.label = nil
+            Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(REWARDS_AVAILABLE)
 
-            if Row.unlocked then
-                if activity.type == Enum.WeeklyRewardChestThresholdType.Raid then
-                    Row.textRight = DifficultyUtil.GetDifficultyName(activity.level)
-                elseif activity.type == Enum.WeeklyRewardChestThresholdType.Activities then
-                    Row.textRight = format(WEEKLY_REWARDS_MYTHIC, activity.level)
-                elseif activity.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
-                    Row.textRight = PVPUtil.GetTierName(activity.level)
-                end
+            return
+        else
+            Broker.label = WEEKLY_REWARDS
+        end
 
-                Row.color = { r = 0.09, g = 1, b = 0.09 }
+        local Earned = 0
 
-                Earned = Earned + 1
+        local ActivityInfo = C_WeeklyRewards.GetActivities()
+        if ActivityInfo and #ActivityInfo > 0 then
+            if not WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
+                WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or WEEKLY_REWARDS_THRESHOLD_RAID
             end
+
+            for _, activity in ipairs(ActivityInfo) do
+                local Row = WeeklyRewards[activity.type][activity.index]
+
+                Row.color = { r = 0.5, g = 0.5, b = 0.5 }
+                Row.level = activity.level
+                Row.progress = activity.progress
+                Row.textLeft = format(WeeklyRewards[activity.type].ThresholdString or UNKNOWN, activity.threshold)
+                Row.textRight = format(GENERIC_FRACTION_STRING, activity.progress, activity.threshold)
+                Row.threshold = activity.threshold
+                Row.unlocked = activity.progress >= activity.threshold
+
+                if Row.unlocked then
+                    if activity.type == Enum.WeeklyRewardChestThresholdType.Raid then
+                        Row.textRight = DifficultyUtil.GetDifficultyName(activity.level)
+                    elseif activity.type == Enum.WeeklyRewardChestThresholdType.Activities then
+                        Row.textRight = format(WEEKLY_REWARDS_MYTHIC, activity.level)
+                    elseif activity.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
+                        Row.textRight = PVPUtil.GetTierName(activity.level)
+                    end
+
+                    Row.color = { r = 0.09, g = 1, b = 0.09 }
+
+                    Earned = Earned + 1
+                end
+            end
+
+            Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), ValueColor)
         end
 
-        Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), ValueColor)
-    end
-
-    Broker.OnClick = Click
-    Broker.OnTooltipShow = OnEnter
+        Broker.OnClick = Click
+        Broker.OnTooltipShow = OnEnter
+    end)
 end
 
 WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
