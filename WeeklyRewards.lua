@@ -11,6 +11,7 @@ local REWARDS_AVAILABLE = "Rewards Available!"
 local WEEKLY_REWARDS = "Weekly Rewards"
 
 local CatalystCharges = 0
+local CatalystCurrencyId = 2796
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
 WeeklyRewards = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
@@ -24,7 +25,7 @@ for i = 1, 3 do
     WeeklyRewards[i][3] = CreateFrame("Frame")
 end
 
-local function GetCatalystCharges() return C_CurrencyInfo.GetCurrencyInfo(2796).quantity end
+local function GetCatalystCharges() return C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity end
 local function HasAvailableRewards() return C_WeeklyRewards.HasAvailableRewards() end
 
 ---@diagnostic disable-next-line: missing-fields
@@ -38,7 +39,7 @@ local Broker = LibStub("LibDataBroker-1.1"):NewDataObject("WeeklyRewards", {
 })
 
 local function UpdateCatalyst(_, currencyType)
-    if currencyType == 2796 then
+    if currencyType == CatalystCurrencyId then
         CatalystCharges = GetCatalystCharges()
     end
 end
