@@ -6,6 +6,19 @@
 
 local _, WeeklyRewards = ...
 
+-- api
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+local C_AddOns_LoadAddOn = C_AddOns.LoadAddOn
+local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+local C_WeeklyRewards_GetActivities = C_WeeklyRewards.GetActivities
+local C_WeeklyRewards_HasAvailableRewards = C_WeeklyRewards.HasAvailableRewards
+local C_WeeklyRewards_IsWeeklyChestRetired = C_WeeklyRewards.IsWeeklyChestRetired
+local GetMaxLevelForLatestExpansion = GetMaxLevelForLatestExpansion
+local InCombatLockdown = InCombatLockdown
+local UnitLevel = UnitLevel
+local WrapTextInColorCode = WrapTextInColorCode
+
+-- locals
 local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges; available."
 local REWARDS_AVAILABLE = "Rewards Available!"
 local WEEKLY_REWARDS = "Weekly Rewards"
@@ -14,7 +27,12 @@ local CatalystCharges = 0
 local CatalystCurrencyId = 2796
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
-WeeklyRewards = CreateFrame("Frame")
+local function GetCatalystCharges() return C_CurrencyInfo_GetCurrencyInfo(CatalystCurrencyId).quantity end
+local function HasAvailableRewards() return C_WeeklyRewards_HasAvailableRewards() end
+local function IsEligible() return (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) or C_WeeklyRewards_IsWeeklyChestRetired() end
+
+-- init
+WeeklyRewards = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
 
 for i = 1, 3 do
     WeeklyRewards[i] = CreateFrame("Frame")
@@ -24,10 +42,6 @@ for i = 1, 3 do
     WeeklyRewards[i][2] = CreateFrame("Frame")
     WeeklyRewards[i][3] = CreateFrame("Frame")
 end
-
-local function GetCatalystCharges() return C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity end
-local function HasAvailableRewards() return C_WeeklyRewards.HasAvailableRewards() end
-local function IsEligible() return IsPlayerAtEffectiveMaxLevel() or C_WeeklyRewards.IsWeeklyChestRetired() end
 
 ---@diagnostic disable-next-line: missing-fields
 local Broker = LibStub("LibDataBroker-1.1"):NewDataObject("WeeklyRewards", {
@@ -39,23 +53,18 @@ local Broker = LibStub("LibDataBroker-1.1"):NewDataObject("WeeklyRewards", {
     OnTooltipShow = function() end
 })
 
-local function UpdateCatalyst(currencyType)
-    if currencyType == CatalystCurrencyId then
-        CatalystCharges = GetCatalystCharges()
-    end
-end
-
+-- handlers
 local function Click()
     if InCombatLockdown() then return end
 
-    if C_AddOns.IsAddOnLoaded("Blizzard_WeeklyRewards") then
+    if C_AddOns_IsAddOnLoaded("Blizzard_WeeklyRewards") then
         if WeeklyRewardsFrame:IsShown() then
             WeeklyRewardsFrame:Hide()
         else
             WeeklyRewardsFrame:Show()
         end
     else
-        C_AddOns.LoadAddOn("Blizzard_WeeklyRewards")
+        C_AddOns_LoadAddOn("Blizzard_WeeklyRewards")
         WeeklyRewardsFrame:Show()
     end
 end
@@ -82,15 +91,14 @@ local function OnEnter(tooltip)
     tooltip:AddLine(WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS, 1, 1, 1)
 end
 
-local function Update(event)
-    if not IsEligible() then return end
+local function UpdateCatalyst(_, currencyType)
+    if currencyType == CatalystCurrencyId then
+        CatalystCharges = GetCatalystCharges()
+    end
+end
 
+local function UpdateRewards()
     C_Timer.After(1, function()
-        if event == "PLAYER_ENTERING_WORLD" then
-            CatalystCharges = GetCatalystCharges()
-            WeeklyRewards:UnregisterEvent("PLAYER_ENTERING_WORLD")
-        end
-
         if HasAvailableRewards() then
             Broker.label = nil
             Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(REWARDS_AVAILABLE)
@@ -102,7 +110,7 @@ local function Update(event)
 
         local Earned = 0
 
-        local ActivityInfo = C_WeeklyRewards.GetActivities()
+        local ActivityInfo = C_WeeklyRewards_GetActivities()
         if ActivityInfo and #ActivityInfo > 0 then
             if not WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
                 WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or WEEKLY_REWARDS_THRESHOLD_RAID
@@ -142,26 +150,23 @@ local function Update(event)
     end)
 end
 
--- events
-WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
-WeeklyRewards:RegisterEvent("PLAYER_ENTERING_WORLD")
-WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE")
-WeeklyRewards:SetScript("OnEvent", function(self, event, currencyType)
+local function Initialize()
     if not IsEligible() then
-        if C_WeeklyRewards.IsWeeklyChestRetired() then
-            self:UnregisterAllEvents()
-            self:SetScript("OnEvent", nil)
-
-            return
-        end
+        WeeklyRewards:UnregisterAllEvents()
+        return
     end
 
-    if event == "CURRENCY_DISPLAY_UPDATE" then
-        UpdateCatalyst(currencyType)
-    else
-        Update()
-    end
-end)
+    WeeklyRewards:UnregisterEvent("PLAYER_ENTERING_WORLD")
+
+    CatalystCharges = GetCatalystCharges()
+
+    UpdateRewards()
+end
+
+-- events
+WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
+WeeklyRewards:RegisterEvent("PLAYER_ENTERING_WORLD", Initialize)
+WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
 
 -- addon compartment globals
 function TherapyWeeklyRewards_OnAddonCompartmentClick() Click() end
