@@ -14,7 +14,7 @@ local CatalystCharges = 0
 local CatalystCurrencyId = 2796
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
-WeeklyRewards = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
+WeeklyRewards = CreateFrame("Frame")
 
 for i = 1, 3 do
     WeeklyRewards[i] = CreateFrame("Frame")
@@ -27,6 +27,7 @@ end
 
 local function GetCatalystCharges() return C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity end
 local function HasAvailableRewards() return C_WeeklyRewards.HasAvailableRewards() end
+local function IsEligible() return IsPlayerAtEffectiveMaxLevel() or C_WeeklyRewards.IsWeeklyChestRetired() end
 
 ---@diagnostic disable-next-line: missing-fields
 local Broker = LibStub("LibDataBroker-1.1"):NewDataObject("WeeklyRewards", {
@@ -38,7 +39,7 @@ local Broker = LibStub("LibDataBroker-1.1"):NewDataObject("WeeklyRewards", {
     OnTooltipShow = function() end
 })
 
-local function UpdateCatalyst(_, currencyType)
+local function UpdateCatalyst(currencyType)
     if currencyType == CatalystCurrencyId then
         CatalystCharges = GetCatalystCharges()
     end
@@ -82,13 +83,13 @@ local function OnEnter(tooltip)
 end
 
 local function Update(event)
+    if not IsEligible() then return end
+
     C_Timer.After(1, function()
         if event == "PLAYER_ENTERING_WORLD" then
             CatalystCharges = GetCatalystCharges()
             WeeklyRewards:UnregisterEvent("PLAYER_ENTERING_WORLD")
         end
-
-        if not IsLevelAtEffectiveMaxLevel(UnitLevel("player")) or C_WeeklyRewards.IsWeeklyChestRetired() then return end
 
         if HasAvailableRewards() then
             Broker.label = nil
@@ -141,9 +142,26 @@ local function Update(event)
     end)
 end
 
-WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
-WeeklyRewards:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
-WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", Update)
+-- events
+WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+WeeklyRewards:RegisterEvent("PLAYER_ENTERING_WORLD")
+WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE")
+WeeklyRewards:SetScript("OnEvent", function(self, event, currencyType)
+    if not IsEligible() then
+        if C_WeeklyRewards.IsWeeklyChestRetired() then
+            self:UnregisterAllEvents()
+            self:SetScript("OnEvent", nil)
+
+            return
+        end
+    end
+
+    if event == "CURRENCY_DISPLAY_UPDATE" then
+        UpdateCatalyst(currencyType)
+    else
+        Update()
+    end
+end)
 
 -- addon compartment globals
 function TherapyWeeklyRewards_OnAddonCompartmentClick() Click() end
