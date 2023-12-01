@@ -13,6 +13,7 @@
 ## X-Wago-ID: BKpqzvGE
 
 # Libs
+Libs\CallbackHandler-1.0.lua
 Libs\AceEvent-3.0.lua
 Libs\LibDataBroker-1.1.lua
 Libs\LibStub.lua
