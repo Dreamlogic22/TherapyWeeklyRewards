@@ -10,6 +10,7 @@ local _, WeeklyRewards = ...
 local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local C_AddOns_LoadAddOn = C_AddOns.LoadAddOn
 local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+local C_Timer_After = C_Timer.After
 local C_WeeklyRewards_GetActivities = C_WeeklyRewards.GetActivities
 local C_WeeklyRewards_HasAvailableRewards = C_WeeklyRewards.HasAvailableRewards
 local C_WeeklyRewards_IsWeeklyChestRetired = C_WeeklyRewards.IsWeeklyChestRetired
@@ -98,7 +99,7 @@ local function UpdateCatalyst(_, currencyType)
 end
 
 local function UpdateRewards()
-    C_Timer.After(1, function()
+    C_Timer_After(1, function()
         if HasAvailableRewards() then
             Broker.label = nil
             Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(REWARDS_AVAILABLE)
