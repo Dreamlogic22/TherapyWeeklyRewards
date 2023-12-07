@@ -1,5 +1,8 @@
 **Version 1.1**
 
+### December 7, 2023
+* Fixed Titan Panel support
+
 ### December 6, 2023
 * Added Catalyst charge display
 * Updated reward display for Mythic Plus to show the keystone level. Closes [#1](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/1#issue-2003437222).

@@ -1,12 +1,14 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.1 (November 24, 2023)
+    Therapy Weekly Rewards 1.2 (December 7, 2023)
 
 ----------------------------------------------------------------------]]
 
-local _, WeeklyRewards = ...
+local WeeklyRewards = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
 
--- api
+local Noop = function() end
+
+-- cache
 local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local C_AddOns_LoadAddOn = C_AddOns.LoadAddOn
 local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
@@ -20,6 +22,8 @@ local UnitLevel = UnitLevel
 local WrapTextInColorCode = WrapTextInColorCode
 
 -- locals
+local Earned = 0
+
 local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges; available."
 local REWARDS_AVAILABLE = "Rewards Available!"
 local WEEKLY_REWARDS = "Weekly Rewards"
@@ -32,29 +36,7 @@ local function GetCatalystCharges() return C_CurrencyInfo_GetCurrencyInfo(Cataly
 local function HasAvailableRewards() return C_WeeklyRewards_HasAvailableRewards() end
 local function IsEligible() return (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) or C_WeeklyRewards_IsWeeklyChestRetired() end
 
--- init
-WeeklyRewards = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
 
-for i = 1, 3 do
-    WeeklyRewards[i] = CreateFrame("Frame")
-    WeeklyRewards[i].Header = (i == 1 and MYTHIC_DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
-    WeeklyRewards[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_MYTHIC) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
-    WeeklyRewards[i][1] = CreateFrame("Frame")
-    WeeklyRewards[i][2] = CreateFrame("Frame")
-    WeeklyRewards[i][3] = CreateFrame("Frame")
-end
-
----@diagnostic disable-next-line: missing-fields
-local Broker = LibStub("LibDataBroker-1.1"):NewDataObject("WeeklyRewards", {
-    type = "data source",
-    label = WEEKLY_REWARDS,
-    text = WrapTextInColorCode("N/A", ValueColor),
-    icon = [[Interface\AddOns\TherapyWeeklyRewards\Icons\Vault]],
-    OnClick = function() end,
-    OnTooltipShow = function() end
-})
-
--- handlers
 local function Click()
     if InCombatLockdown() then return end
 
@@ -100,71 +82,81 @@ end
 
 local function UpdateRewards()
     C_Timer_After(1, function()
-        if HasAvailableRewards() then
-            Broker.label = nil
-            Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(REWARDS_AVAILABLE)
-
-            return
-        else
-            Broker.label = WEEKLY_REWARDS
-        end
-
-        local Earned = 0
-
-        local ActivityInfo = C_WeeklyRewards_GetActivities()
-        if ActivityInfo and #ActivityInfo > 0 then
-            if not WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
-                WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or WEEKLY_REWARDS_THRESHOLD_RAID
+        if IsEligible() then
+            if C_WeeklyRewards_HasAvailableRewards() then
+                Broker.label = nil
+                Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(REWARDS_AVAILABLE)
+                return
+            else
+                Broker.label = WEEKLY_REWARDS
             end
 
-            for _, activity in ipairs(ActivityInfo) do
-                local Row = WeeklyRewards[activity.type][activity.index]
+            local ActivityInfo = C_WeeklyRewards_GetActivities()
+            if ActivityInfo and #ActivityInfo > 0 then
+                Earned = 0
 
-                Row.color = { r = 0.5, g = 0.5, b = 0.5 }
-                Row.level = activity.level
-                Row.progress = activity.progress
-                Row.textLeft = format(WeeklyRewards[activity.type].ThresholdString or UNKNOWN, activity.threshold)
-                Row.textRight = format(GENERIC_FRACTION_STRING, activity.progress, activity.threshold)
-                Row.threshold = activity.threshold
-                Row.unlocked = activity.progress >= activity.threshold
+                if not WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
+                    WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or UNKNOWN
+                end
 
-                if Row.unlocked then
-                    if activity.type == Enum.WeeklyRewardChestThresholdType.Raid then
-                        Row.textRight = DifficultyUtil.GetDifficultyName(activity.level)
-                    elseif activity.type == Enum.WeeklyRewardChestThresholdType.Activities then
-                        Row.textRight = format(WEEKLY_REWARDS_MYTHIC, activity.level)
-                    elseif activity.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
-                        Row.textRight = PVPUtil.GetTierName(activity.level)
+                for _, activity in pairs(ActivityInfo) do
+                    local Row = WeeklyRewards[activity.type][activity.index]
+
+                    Row.color = { r = 0.5, g = 0.5, b = 0.5 }
+                    Row.level = activity.level
+                    Row.progress = activity.progress
+                    Row.textLeft = format(WeeklyRewards[activity.type].ThresholdString or UNKNOWN, activity.threshold)
+                    Row.textRight = format(GENERIC_FRACTION_STRING, activity.progress, activity.threshold)
+                    Row.threshold = activity.threshold
+                    Row.unlocked = activity.progress >= activity.threshold
+
+                    if Row.unlocked then
+                        if activity.type == Enum.WeeklyRewardChestThresholdType.Raid then
+                            Row.textRight = DifficultyUtil.GetDifficultyName(activity.level)
+                        elseif activity.type == Enum.WeeklyRewardChestThresholdType.MythicPlus then
+                            Row.textRight = format(WEEKLY_REWARDS_MYTHIC, activity.level)
+                        elseif activity.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
+                            Row.textRight = PVPUtil.GetTierName(activity.level)
+                        end
+
+                        Row.color = { r = 0.09, g = 1, b = 0.09 }
+
+                        Earned = Earned + 1
                     end
-
-                    Row.color = { r = 0.09, g = 1, b = 0.09 }
-
-                    Earned = Earned + 1
                 end
             end
 
             Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), ValueColor)
         end
-
-        Broker.OnClick = Click
-        Broker.OnTooltipShow = OnEnter
     end)
 end
 
-local function Initialize()
-    if not IsEligible() then
-        WeeklyRewards:UnregisterAllEvents()
-        return
-    end
-
-    WeeklyRewards:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
-    CatalystCharges = GetCatalystCharges()
-
-    UpdateRewards()
+local LDB = LibStub("LibDataBroker-1.1")
+if LDB then
+    ---@diagnostic disable-next-line: missing-fields
+    Broker = LDB:NewDataObject(WEEKLY_REWARDS, {
+        type = "data source",
+        label = WEEKLY_REWARDS,
+        text = WrapTextInColorCode("N/A", ValueColor),
+        icon = [[Interface\AddOns\TherapyWeeklyRewards\Icons\Vault]],
+        OnClick = IsEligible() and Click or Noop,
+        OnTooltipShow = IsEligible() and OnEnter or Noop
+    })
 end
 
--- events
-WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
-WeeklyRewards:RegisterEvent("PLAYER_ENTERING_WORLD", Initialize)
-WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
+if IsEligible() then
+    for i = 1, 3 do
+        WeeklyRewards[i] = CreateFrame("Frame")
+        WeeklyRewards[i].Header = (i == 1 and MYTHIC_DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
+        WeeklyRewards[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_MYTHIC) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
+        WeeklyRewards[i][1] = CreateFrame("Frame")
+        WeeklyRewards[i][2] = CreateFrame("Frame")
+        WeeklyRewards[i][3] = CreateFrame("Frame")
+    end
+
+    WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
+    WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
+
+    UpdateCatalyst()
+    UpdateRewards()
+end
