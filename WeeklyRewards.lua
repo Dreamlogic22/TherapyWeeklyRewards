@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.1 (December 6, 2023)
+    Therapy Weekly Rewards 1.1 (November 24, 2023)
 
 ----------------------------------------------------------------------]]
 
@@ -168,17 +168,3 @@ end
 WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
 WeeklyRewards:RegisterEvent("PLAYER_ENTERING_WORLD", Initialize)
 WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
-
--- addon compartment globals
-function TherapyWeeklyRewards_OnAddonCompartmentClick() Click() end
-
-function TherapyWeeklyRewards_OnAddonCompartmentEnter(_, button)
-    GameTooltip:ClearLines()
-    GameTooltip:SetOwner(button, "ANCHOR_CURSOR")
-
-    OnEnter(GameTooltip)
-
-    GameTooltip:Show()
-end
-
-function TherapyWeeklyRewards_OnAddonCompartmentLeave() GameTooltip:Hide() end
