@@ -113,7 +113,7 @@ local function UpdateRewards()
                     if Row.unlocked then
                         if activity.type == Enum.WeeklyRewardChestThresholdType.Raid then
                             Row.textRight = DifficultyUtil.GetDifficultyName(activity.level)
-                        elseif activity.type == Enum.WeeklyRewardChestThresholdType.MythicPlus then
+                        elseif activity.type == Enum.WeeklyRewardChestThresholdType.Activities then
                             Row.textRight = format(WEEKLY_REWARDS_MYTHIC, activity.level)
                         elseif activity.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
                             Row.textRight = PVPUtil.GetTierName(activity.level)
