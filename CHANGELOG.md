@@ -1,6 +1,6 @@
 **Version 1.1**
 
-### November 23, 2023
+### December 6, 2023
 * Added Catalyst charge display
 * Blizzard Addon Compartment support
 * Updated reward display for Mythic Plus to show the keystone level. Closes [#1](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/1#issue-2003437222).
@@ -23,4 +23,4 @@
 ### March 12, 2023
 * Collecting rewards from the Vault should now instantly refresh the display.
 * Fix a display issue with available raid rewards not reporting the correct instance.
-* Remove an unwanted dependency on ElvUI
+* Remove an unwanted dependency on ElvUI.
