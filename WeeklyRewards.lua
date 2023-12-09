@@ -36,7 +36,6 @@ local function GetCatalystCharges() return C_CurrencyInfo_GetCurrencyInfo(Cataly
 local function HasAvailableRewards() return C_WeeklyRewards_HasAvailableRewards() end
 local function IsEligible() return (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) or C_WeeklyRewards_IsWeeklyChestRetired() end
 
-
 local function Click()
     if InCombatLockdown() then return end
 
@@ -137,7 +136,7 @@ if LDB then
     Broker = LDB:NewDataObject(WEEKLY_REWARDS, {
         type = "data source",
         label = WEEKLY_REWARDS,
-        text = WrapTextInColorCode("N/A", ValueColor),
+        text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
         icon = [[Interface\AddOns\TherapyWeeklyRewards\Icons\Vault]],
         OnClick = IsEligible() and Click or Noop,
         OnTooltipShow = IsEligible() and OnEnter or Noop
