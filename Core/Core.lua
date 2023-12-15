@@ -1,4 +1,4 @@
-local T, Broker = unpack(select(2, ...))
+local WeeklyRewards, Broker = unpack(select(2, ...))
 
 -- strings
 local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges; available."
@@ -39,10 +39,10 @@ local function OnEnter(tooltip)
     tooltip:AddLine(WEEKLY_REWARDS)
     tooltip:AddLine(" ")
 
-    for i = 1, #T do
-        tooltip:AddLine(T[i].Header)
+    for i = 1, #WeeklyRewards do
+        tooltip:AddLine(WeeklyRewards[i].Header)
 
-        for _, v in ipairs(T[i]) do
+        for _, v in ipairs(WeeklyRewards[i]) do
             tooltip:AddDoubleLine(v.textLeft, v.textRight, v.color.r, v.color.g, v.color.b, v.color.r, v.color.g, v.color.b)
         end
 
@@ -80,17 +80,17 @@ local function UpdateRewards()
             if ActivityInfo and #ActivityInfo > 0 then
                 Earned = 0
 
-                if not T[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
-                    T[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or UNKNOWN
+                if not WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
+                    WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or UNKNOWN
                 end
 
                 for _, activity in pairs(ActivityInfo) do
-                    local Row = T[activity.type][activity.index]
+                    local Row = WeeklyRewards[activity.type][activity.index]
 
                     Row.color = { r = 0.5, g = 0.5, b = 0.5 }
                     Row.level = activity.level
                     Row.progress = activity.progress
-                    Row.textLeft = format(T[activity.type].ThresholdString or UNKNOWN, activity.threshold)
+                    Row.textLeft = format(WeeklyRewards[activity.type].ThresholdString or UNKNOWN, activity.threshold)
                     Row.textRight = format(GENERIC_FRACTION_STRING, activity.progress, activity.threshold)
                     Row.threshold = activity.threshold
                     Row.unlocked = activity.progress >= activity.threshold
@@ -121,8 +121,8 @@ end
 ----------------------------------------------------------------------
 
 local function Enable(event, addOnName)
-    if event == "ADDON_LOADED" and addOnName == T.Name then
-        T:UnregisterEvent("ADDON_LOADED")
+    if event == "ADDON_LOADED" and addOnName == WeeklyRewards.Name then
+        WeeklyRewards:UnregisterEvent("ADDON_LOADED")
 
         local LDB = LibStub("LibDataBroker-1.1")
         if LDB then
@@ -137,17 +137,13 @@ local function Enable(event, addOnName)
     end
 
     if IsEligible() then
-        if T:IsEventRegistered("PLAYER_LEVEL_UP") then
-            T:UnregisterEvent("PLAYER_LEVEL_UP")
-        end
-
         for i = 1, 3 do
-            T[i] = CreateFrame("Frame")
-            T[i].Header = (i == 1 and MYTHIC_DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
-            T[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_MYTHIC) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
-            T[i][1] = CreateFrame("Frame")
-            T[i][2] = CreateFrame("Frame")
-            T[i][3] = CreateFrame("Frame")
+            WeeklyRewards[i] = CreateFrame("Frame")
+            WeeklyRewards[i].Header = (i == 1 and MYTHIC_DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
+            WeeklyRewards[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_MYTHIC) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
+            WeeklyRewards[i][1] = CreateFrame("Frame")
+            WeeklyRewards[i][2] = CreateFrame("Frame")
+            WeeklyRewards[i][3] = CreateFrame("Frame")
         end
 
         Broker.OnClick = Click
@@ -156,11 +152,9 @@ local function Enable(event, addOnName)
         UpdateCatalyst(nil, CatalystCurrencyId)
         UpdateRewards()
 
-        T:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
-        T:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
-    else
-        T:RegisterEvent("PLAYER_LEVEL_UP", Enable)
+        WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
+        WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
     end
 end
 
-T:RegisterEvent("ADDON_LOADED", Enable)
+WeeklyRewards:RegisterEvent("ADDON_LOADED", Enable)
