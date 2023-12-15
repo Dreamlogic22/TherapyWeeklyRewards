@@ -16,5 +16,11 @@ Libs\LibDataBroker-1.1.lua
 Libs\LibStub.lua
 Libs\TaintLess.xml
 
+# Init
+Init.lua
+
 # Core
-WeeklyRewards.lua
+Core\Core.lua
+
+# Core
+# WeeklyRewards.lua

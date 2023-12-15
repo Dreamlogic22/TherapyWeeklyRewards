@@ -156,6 +156,26 @@ if IsEligible() then
     WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
     WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
 
-    UpdateCatalyst()
+    UpdateCatalyst(nil, CatalystCurrencyId)
     UpdateRewards()
 end
+
+-- WeeklyRewards:RegisterEvent("PLAYER_ENTERING_WORLD")
+-- WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
+-- WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
+
+--[[ WeeklyRewards:SetScript("OnEvent", function(self, event, arg)
+    if event == "PLAYER_ENTERING_WORLD" then
+        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+
+        UpdateCatalyst()
+        UpdateRewards()
+    elseif event == "CURRENCY_DISPLAY_UPDATE" and arg == CatalystCurrencyId then
+        UpdateCatalyst()
+    else
+        UpdateRewards()
+    end
+end) ]]
+
+-- UpdateCatalyst(nil, CatalystCurrencyId)
+-- UpdateRewards()
