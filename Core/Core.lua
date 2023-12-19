@@ -34,7 +34,7 @@ local function Click()
 end
 
 local function OnEnter(tooltip)
-    if InCombatLockdown() or C_WeeklyRewards.HasAvailableRewards() then return end
+    if InCombatLockdown() then return end
 
     tooltip:AddLine(WEEKLY_REWARDS)
     tooltip:AddLine(" ")
@@ -149,11 +149,13 @@ local function Enable(event, addOnName)
         Broker.OnClick = Click
         Broker.OnTooltipShow = OnEnter
 
-        UpdateCatalyst(nil, CatalystCurrencyId)
-        UpdateRewards()
-
         WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
         WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
+
+        C_Timer.After(1, function()
+            UpdateCatalyst(nil, CatalystCurrencyId)
+            UpdateRewards()
+        end)
     end
 end
 
