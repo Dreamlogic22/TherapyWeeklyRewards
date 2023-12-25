@@ -34,7 +34,7 @@ local function Click()
 end
 
 local function OnEnter(tooltip)
-    if InCombatLockdown() then return end
+    if InCombatLockdown() or C_WeeklyRewards.HasAvailableRewards() then return end
 
     tooltip:AddLine(WEEKLY_REWARDS)
     tooltip:AddLine(" ")
@@ -60,9 +60,11 @@ end
 ----------------------------------------------------------------------
 
 local function UpdateCatalyst(_, currencyType)
-    if currencyType == CatalystCurrencyId then
-        CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
-    end
+    C_Timer.After(1, function()
+        if currencyType == CatalystCurrencyId then
+            CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
+        end
+    end)
 end
 
 local function UpdateRewards()
@@ -152,10 +154,8 @@ local function Enable(event, addOnName)
         WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
         WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
 
-        C_Timer.After(1, function()
-            UpdateCatalyst(nil, CatalystCurrencyId)
-            UpdateRewards()
-        end)
+        UpdateCatalyst(nil, CatalystCurrencyId)
+        UpdateRewards()
     end
 end
 
