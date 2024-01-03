@@ -1,6 +1,6 @@
 ## Interface: 100200
 ## Title: |cff33937fTherapy|r Weekly Rewards
-## Version: 1.3
+## Version: 1.4
 ## Author: River
 ## Notes: Data broker for weekly activities progress.
 ## DefaultState: Enabled

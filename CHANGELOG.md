@@ -1,4 +1,5 @@
-**Version 1.1**
+### January 3, 2024 ###
+* Fixed an issue with Catalyst Charges not updating. Closes [#2](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/2).
 
 ### December 7, 2023
 * Fixed Titan Panel support
