@@ -19,7 +19,7 @@ local function IsEligible() return (UnitLevel("player") >= GetMaxLevelForLatestE
 ----------------------------------------------------------------------
 
 local function Click()
-    if InCombatLockdown() then return end
+    if InCombatLockdown() or C_WeeklyRewards.HasAvailableRewards() then return end
 
     if C_AddOns.IsAddOnLoaded("Blizzard_WeeklyRewards") then
         if WeeklyRewardsFrame:IsShown() then
