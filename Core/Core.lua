@@ -1,22 +1,15 @@
 local WeeklyRewards, Broker = unpack(select(2, ...))
 
--- strings
 local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges; available."
 local REWARDS_AVAILABLE = "Rewards Available!"
 local WEEKLY_REWARDS = "Weekly Rewards"
 
--- constants
 local CatalystCharges = 0
 local CatalystCurrencyId = 2796
 local Earned = 0
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
--- functions
 local function IsEligible() return (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) or C_WeeklyRewards.IsWeeklyChestRetired() end
-
-----------------------------------------------------------------------
--- Display
-----------------------------------------------------------------------
 
 local function Click()
     if InCombatLockdown() or C_WeeklyRewards.HasAvailableRewards() then return end
@@ -54,10 +47,6 @@ local function OnEnter(tooltip)
 
     tooltip:AddLine(WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS, 1, 1, 1)
 end
-
-----------------------------------------------------------------------
--- Data
-----------------------------------------------------------------------
 
 local function UpdateCatalyst(_, currencyType)
     C_Timer.After(1, function()
@@ -117,10 +106,6 @@ local function UpdateRewards()
         end
     end)
 end
-
-----------------------------------------------------------------------
--- Events
-----------------------------------------------------------------------
 
 local function Enable(event, addOnName)
     if event == "ADDON_LOADED" and addOnName == WeeklyRewards.Name then
