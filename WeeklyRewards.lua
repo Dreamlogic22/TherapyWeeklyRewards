@@ -1,4 +1,12 @@
-local WeeklyRewards, Broker = unpack(select(2, ...))
+--[[--------------------------------------------------------------------
+
+    Therapy Weekly Rewards 1.41 (January 11, 2024)
+
+----------------------------------------------------------------------]]
+
+local Name, WeeklyRewards = ...
+
+WeeklyRewards = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
 
 local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges; available."
 local REWARDS_AVAILABLE = "Rewards Available!"
@@ -9,25 +17,17 @@ local CatalystCurrencyId = 2796
 local Earned = 0
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
+local function HasRewards() return C_WeeklyRewards.HasAvailableRewards() and C_WeeklyRewards.CanClaimRewards() end
 local function IsEligible() return (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) or C_WeeklyRewards.IsWeeklyChestRetired() end
 
 local function Click()
-    if InCombatLockdown() or C_WeeklyRewards.HasAvailableRewards() then return end
+    if InCombatLockdown() or HasRewards() then return end
 
-    if C_AddOns.IsAddOnLoaded("Blizzard_WeeklyRewards") then
-        if WeeklyRewardsFrame:IsShown() then
-            WeeklyRewardsFrame:Hide()
-        else
-            WeeklyRewardsFrame:Show()
-        end
-    else
-        C_AddOns.LoadAddOn("Blizzard_WeeklyRewards")
-        WeeklyRewardsFrame:Show()
-    end
+    WeeklyRewards_ShowUI()
 end
 
 local function OnEnter(tooltip)
-    if InCombatLockdown() or C_WeeklyRewards.HasAvailableRewards() then return end
+    if InCombatLockdown() or HasRewards() then return end
 
     tooltip:AddLine(WEEKLY_REWARDS)
     tooltip:AddLine(" ")
@@ -59,7 +59,7 @@ end
 local function UpdateRewards()
     C_Timer.After(1, function()
         if IsEligible() then
-            if C_WeeklyRewards.HasAvailableRewards() then
+            if HasRewards() then
                 Broker.label = nil
                 Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(REWARDS_AVAILABLE)
                 return
@@ -90,7 +90,7 @@ local function UpdateRewards()
                         if activity.type == Enum.WeeklyRewardChestThresholdType.Raid then
                             Row.textRight = DifficultyUtil.GetDifficultyName(activity.level)
                         elseif activity.type == Enum.WeeklyRewardChestThresholdType.Activities then
-                            Row.textRight = format(WEEKLY_REWARDS_MYTHIC, activity.level)
+                            Row.textRight = C_WeeklyRewards.GetDifficultyIDForActivityTier(activity.activityTierID) == DifficultyUtil.ID.DungeonHeroic and WEEKLY_REWARDS_HEROIC or format(WEEKLY_REWARDS_MYTHIC, activity.level)
                         elseif activity.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
                             Row.textRight = PVPUtil.GetTierName(activity.level)
                         end
@@ -108,7 +108,7 @@ local function UpdateRewards()
 end
 
 local function Enable(event, addOnName)
-    if event == "ADDON_LOADED" and addOnName == WeeklyRewards.Name then
+    if event == "ADDON_LOADED" and addOnName == Name then
         WeeklyRewards:UnregisterEvent("ADDON_LOADED")
 
         local LDB = LibStub("LibDataBroker-1.1")
@@ -127,7 +127,7 @@ local function Enable(event, addOnName)
         for i = 1, 3 do
             WeeklyRewards[i] = CreateFrame("Frame")
             WeeklyRewards[i].Header = (i == 1 and MYTHIC_DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
-            WeeklyRewards[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_MYTHIC) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
+            WeeklyRewards[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
             WeeklyRewards[i][1] = CreateFrame("Frame")
             WeeklyRewards[i][2] = CreateFrame("Frame")
             WeeklyRewards[i][3] = CreateFrame("Frame")
