@@ -1,3 +1,6 @@
+### January 18, 2024 ###
+* Update TOC for 10.2.5
+
 ### January 3, 2024 ###
 * Fixed an issue with Catalyst Charges not updating. Closes [#2](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/2).
 
