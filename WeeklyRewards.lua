@@ -123,7 +123,7 @@ local function Enable(event, addOnName)
     if (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) and not C_WeeklyRewards.IsWeeklyChestRetired() then
         for i = 1, 3 do
             WeeklyRewards[i] = CreateFrame("Frame")
-            WeeklyRewards[i].Header = (i == 1 and MYTHIC_DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
+            WeeklyRewards[i].Header = (i == 1 and DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
             WeeklyRewards[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
             WeeklyRewards[i][1] = CreateFrame("Frame")
             WeeklyRewards[i][2] = CreateFrame("Frame")
