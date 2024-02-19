@@ -8,6 +8,8 @@ local Name, WeeklyRewards = ...
 
 WeeklyRewards = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
 
+local Broker
+
 local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges; available."
 local REWARDS_AVAILABLE = "Rewards Available!"
 local WEEKLY_REWARDS = "Weekly Rewards"
@@ -105,11 +107,23 @@ local function UpdateRewards()
 end
 
 local function Enable(event, addOnName)
+    local Defaults = {
+        profile = {
+            minimap = {
+                hide = true
+            }
+        }
+    }
+
     if event == "ADDON_LOADED" and addOnName == Name then
         WeeklyRewards:UnregisterEvent("ADDON_LOADED")
 
+        WeeklyRewards.db = LibStub("AceDB-3.0"):New("TherapyWeeklyRewardsDB", Defaults)
+
         local LDB = LibStub("LibDataBroker-1.1")
-        if LDB then
+        local LDI = LibStub("LibDBIcon-1.0")
+
+        if LDB and LDI then
             ---@diagnostic disable-next-line: missing-fields
             Broker = LDB:NewDataObject(WEEKLY_REWARDS, {
                 type = "data source",
@@ -117,6 +131,9 @@ local function Enable(event, addOnName)
                 text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
                 icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
             })
+
+            ---@diagnostic disable-next-line: param-type-mismatch
+            LDI:Register("TherapyWeeklyRewardsDB", Broker, WeeklyRewards.db.profile.minimap)
         end
     end
 
