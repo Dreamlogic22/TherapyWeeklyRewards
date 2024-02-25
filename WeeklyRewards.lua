@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.41 (January 16, 2024)
+    Therapy Weekly Rewards 1.42 (February 24, 2024)
 
 ----------------------------------------------------------------------]]
 
@@ -8,7 +8,9 @@ local Name, WeeklyRewards = ...
 
 WeeklyRewards = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
 
-local Broker
+local Broker, Button, Data
+
+local Title = C_AddOns.GetAddOnMetadata(Name, "Title")
 
 local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges; available."
 local REWARDS_AVAILABLE = "Rewards Available!"
@@ -106,6 +108,14 @@ local function UpdateRewards()
     end)
 end
 
+local function UpdateButton()
+    if Data.profile.minimap.hide then
+        Button:Hide(Name)
+    else
+        Button:Show(Name)
+    end
+end
+
 local function Enable(event, addOnName)
     local Defaults = {
         profile = {
@@ -118,12 +128,11 @@ local function Enable(event, addOnName)
     if event == "ADDON_LOADED" and addOnName == Name then
         WeeklyRewards:UnregisterEvent("ADDON_LOADED")
 
-        WeeklyRewards.db = LibStub("AceDB-3.0"):New("TherapyWeeklyRewardsDB", Defaults)
+        Button = LibStub("LibDBIcon-1.0")
+        Data = LibStub("AceDB-3.0"):New("TherapyWeeklyRewardsDB", Defaults, true)
 
         local LDB = LibStub("LibDataBroker-1.1")
-        local LDI = LibStub("LibDBIcon-1.0")
-
-        if LDB and LDI then
+        if LDB then
             ---@diagnostic disable-next-line: missing-fields
             Broker = LDB:NewDataObject(WEEKLY_REWARDS, {
                 type = "data source",
@@ -133,7 +142,7 @@ local function Enable(event, addOnName)
             })
 
             ---@diagnostic disable-next-line: param-type-mismatch
-            LDI:Register("TherapyWeeklyRewardsDB", Broker, WeeklyRewards.db.profile.minimap)
+            Button:Register(Name, Broker, Data.profile.minimap)
         end
     end
 
@@ -153,8 +162,19 @@ local function Enable(event, addOnName)
         WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
         WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
 
+        UpdateButton()
         UpdateCatalyst(nil, CatalystCurrencyId)
         UpdateRewards()
+    end
+
+    SLASH_THERAPYWEEKLYREWARDS1 ="/tww"
+    SlashCmdList["THERAPYWEEKLYREWARDS"] = function(message)
+        if strlen(message) > 0 and message == "minimap" then
+            Data.profile.minimap.hide = not Data.profile.minimap.hide
+            UpdateButton()
+        else
+            print(Title, [[: Type "/tww minimap" to toggle the minimap button.]])
+        end
     end
 end
 
