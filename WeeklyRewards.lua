@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.42 (February 24, 2024)
+    Therapy Weekly Rewards 1.42 (February 26, 2024)
 
 ----------------------------------------------------------------------]]
 
@@ -9,8 +9,6 @@ local Name, WeeklyRewards = ...
 WeeklyRewards = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
 
 local Broker, Button, Data
-
-local Title = C_AddOns.GetAddOnMetadata(Name, "Title")
 
 local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges; available."
 local REWARDS_AVAILABLE = "Rewards Available!"
@@ -109,7 +107,7 @@ local function UpdateRewards()
 end
 
 local function UpdateButton()
-    if Data.profile.minimap.hide then
+    if Data.global.minimap.hide then
         Button:Hide(Name)
     else
         Button:Show(Name)
@@ -118,9 +116,9 @@ end
 
 local function Enable(event, addOnName)
     local Defaults = {
-        profile = {
+        global = {
             minimap = {
-                hide = true
+                hide = false
             }
         }
     }
@@ -140,9 +138,11 @@ local function Enable(event, addOnName)
                 text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
                 icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
             })
+        end
 
+        if Button then
             ---@diagnostic disable-next-line: param-type-mismatch
-            Button:Register(Name, Broker, Data.profile.minimap)
+            Button:Register(Name, Broker, Data.global.minimap)
         end
     end
 
@@ -167,13 +167,13 @@ local function Enable(event, addOnName)
         UpdateRewards()
     end
 
-    SLASH_THERAPYWEEKLYREWARDS1 ="/tww"
+    SLASH_THERAPYWEEKLYREWARDS1 = "/tww"
     SlashCmdList["THERAPYWEEKLYREWARDS"] = function(message)
         if strlen(message) > 0 and message == "minimap" then
-            Data.profile.minimap.hide = not Data.profile.minimap.hide
+            Data.global.minimap.hide = not Data.global.minimap.hide
             UpdateButton()
         else
-            print(Title, [[: Type "/tww minimap" to toggle the minimap button.]])
+            print([[|cff33937fTherapy|r Weekly Rewards: Type "/tww minimap" to toggle the minimap button.]])
         end
     end
 end
