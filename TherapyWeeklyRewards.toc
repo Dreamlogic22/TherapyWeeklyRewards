@@ -1,5 +1,5 @@
 ## Interface: 100205
-## Title: |cff33937fTherapy|r Weekly Rewards
+## Title: |cff33ff99Therapy|r Weekly Rewards
 ## Version: 1.42
 ## SavedVariables: TherapyWeeklyRewardsDB
 ## Author: River
@@ -11,12 +11,18 @@
 ## X-Wago-ID: BKpqzvGE
 
 # Libs
-Libs\CallbackHandler-1.0.lua
-Libs\AceEvent-3.0.lua
-Libs\LibDataBroker-1.1.lua
 Libs\LibStub.lua
+Libs\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0.lua
 Libs\TaintLess.xml
 
-# Main
+# Init
+# Init.lua
+
+# Localization
+# Locales\enUS.lua
+
+# Core
+# Core.lua
+
 WeeklyRewards.lua
-Config.lua
