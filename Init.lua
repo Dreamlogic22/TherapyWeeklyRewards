@@ -1,30 +1,32 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.42 (March 2, 2024)
+    Therapy Weekly Rewards 1.42 (March 4, 2024)
 
 ----------------------------------------------------------------------]]
 
-local Name, T = ...
+local Name, WeeklyRewards = ...
 
 local GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 
-T.Name = Name
-T.Title = GetAddOnMetadata(Name, "Title")
-T.Version = GetAddOnMetadata(Name, "Version")
+WeeklyRewards.Name = Name
+WeeklyRewards.Title = GetAddOnMetadata(Name, "Title")
+WeeklyRewards.Version = GetAddOnMetadata(Name, "Version")
 
--- localization
-T.L = {}
+WeeklyRewards.Locale = {}
 
-local Defaults = {
-    minimap = {
-        hide = false
-    }
-}
+WeeklyRewards.ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
 local function LoadDatabase()
+    local Defaults = {
+        minimap = {
+            hide = false
+        }
+    }
+
     -- uncomment to wipe: wipe(TherapyWeeklyRewardsDB)
 
     TherapyWeeklyRewardsDB = TherapyWeeklyRewardsDB or {}
+
     local DB = TherapyWeeklyRewardsDB
 
     for key, value in pairs(Defaults) do
@@ -34,7 +36,7 @@ local function LoadDatabase()
     end
 
     if not DB.version or type(DB.version) ~= "number" then
-        DB.version = T.Version
+        DB.version = WeeklyRewards.Version
     end
 
     Defaults = nil
@@ -43,7 +45,28 @@ end
 EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", function(owner, addOnName)
     if addOnName == Name then
         EventRegistry:UnregisterFrameEventAndCallback("ADDON_LOADED", owner)
-
-        LoadDatabase()
     end
-end, T)
+
+    LoadDatabase()
+
+    local L = WeeklyRewards.Locale
+
+    local LDB = LibStub("LibDataBroker-1.1")
+    local LDI = LibStub("LibDBIcon-1.0")
+
+    if LDB then
+        WeeklyRewards.Broker = LDB:NewDataObject(L["Weekly Rewards"], {
+            type = "data source",
+            label = L["Weekly Rewards"],
+            text = WrapTextInColorCode(NOT_APPLICABLE, WeeklyRewards.ValueColor),
+            icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
+        })
+    end
+
+    if LDI then
+        ---@diagnostic disable-next-line: param-type-mismatch
+        LDI:Register(Name, WeeklyRewards.Broker, TherapyWeeklyRewardsDB.minimap)
+        WeeklyRewards.Button = LDI
+    end
+
+end, WeeklyRewards)

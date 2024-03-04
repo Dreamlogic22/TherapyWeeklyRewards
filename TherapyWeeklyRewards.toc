@@ -17,12 +17,15 @@ Libs\LibDBIcon-1.0.lua
 Libs\TaintLess.xml
 
 # Init
-# Init.lua
+Init.lua
 
 # Localization
-# Locales\enUS.lua
+Locales\enUS.lua
 
 # Core
-# Core.lua
+Core\Core.lua
 
-WeeklyRewards.lua
+# Modules
+Modules\Catalyst.lua
+
+# WeeklyRewards.lua
