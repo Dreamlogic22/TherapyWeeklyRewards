@@ -1,72 +1,67 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.42 (March 4, 2024)
+    Therapy Weekly Rewards 1.42 (March 10, 2024)
 
 ----------------------------------------------------------------------]]
 
-local Name, WeeklyRewards = ...
+local name, ns = ...
 
 local GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 
-WeeklyRewards.Name = Name
-WeeklyRewards.Title = GetAddOnMetadata(Name, "Title")
-WeeklyRewards.Version = GetAddOnMetadata(Name, "Version")
+ns.Name = name
+ns.Title = GetAddOnMetadata(name, "Title")
+ns.Version = GetAddOnMetadata(name, "Version")
 
-WeeklyRewards.Locale = {}
+ns.Locale = {}
 
-WeeklyRewards.ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
+ns.ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
 local function LoadDatabase()
-    local Defaults = {
-        minimap = {
-            hide = false
-        }
-    }
+    local db = TherapyWeeklyRewardsDB
 
-    -- uncomment to wipe: wipe(TherapyWeeklyRewardsDB)
-
-    TherapyWeeklyRewardsDB = TherapyWeeklyRewardsDB or {}
-
-    local DB = TherapyWeeklyRewardsDB
-
-    for key, value in pairs(Defaults) do
-        if DB[key] == nil then
-            DB[key] = value
+    if #db == 0 then
+        for key, value in pairs(ns.defaults) do
+            if db[key] == nil then
+                db[key] = value
+            end
         end
     end
 
-    if not DB.version or type(DB.version) ~= "number" then
-        DB.version = WeeklyRewards.Version
+    if not db.version or db.version ~= ns.Version then
+        db.version = ns.Version
     end
 
-    Defaults = nil
+    ns.defaults = nil
+
+    ns.db = db
 end
 
-EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", function(owner, addOnName)
-    if addOnName == Name then
-        EventRegistry:UnregisterFrameEventAndCallback("ADDON_LOADED", owner)
-    end
-
-    LoadDatabase()
-
-    local L = WeeklyRewards.Locale
-
+local function Initialize()
     local LDB = LibStub("LibDataBroker-1.1")
-    local LDI = LibStub("LibDBIcon-1.0")
 
     if LDB then
-        WeeklyRewards.Broker = LDB:NewDataObject(L["Weekly Rewards"], {
+        ns.Broker = LDB:NewDataObject(name, {
             type = "data source",
-            label = L["Weekly Rewards"],
-            text = WrapTextInColorCode(NOT_APPLICABLE, WeeklyRewards.ValueColor),
+            label = ns.Locale["Weekly Rewards"],
+            text = WrapTextInColorCode(NOT_APPLICABLE, ns.ValueColor),
             icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
         })
     end
 
-    if LDI then
-        ---@diagnostic disable-next-line: param-type-mismatch
-        LDI:Register(Name, WeeklyRewards.Broker, TherapyWeeklyRewardsDB.minimap)
-        WeeklyRewards.Button = LDI
-    end
+    ns.Button = LibStub("LibDBIcon-1.0")
 
-end, WeeklyRewards)
+    if ns.Button then
+        ---@diagnostic disable-next-line: param-type-mismatch
+        ns.Button:Register(name, ns.Broker, ns.db.minimap)
+    end
+end
+
+EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", function(owner, addOnName)
+    if addOnName == name then
+        EventRegistry:UnregisterFrameEventAndCallback("ADDON_LOADED", owner)
+
+        LoadDatabase()
+
+        Initialize()
+    end
+end, ns)

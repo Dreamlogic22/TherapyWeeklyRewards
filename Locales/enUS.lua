@@ -1,6 +1,6 @@
-local _, WeeklyRewards = ...
+local _, ns = ...
 
-local L = WeeklyRewards.Locale
+local L = ns.Locale
 
 L["Catalyst Charges"] = "You have %s Catalyst |4charge:charges; available."
 L["Rewards Available"] = "Rewards Available!"
