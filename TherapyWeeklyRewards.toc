@@ -21,9 +21,4 @@ Config\Settings.lua
 
 Locales\enUS.lua
 
-# Core.lua
-
-# WeeklyRewards.lua
-
-# Core
-WeeklyRewards2.lua
+WeeklyRewards.lua

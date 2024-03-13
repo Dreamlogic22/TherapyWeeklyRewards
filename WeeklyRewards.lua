@@ -1,23 +1,12 @@
---[[--------------------------------------------------------------------
+local Name, T = ...
 
-    Therapy Weekly Rewards 1.42 (March 1, 2024)
-
-----------------------------------------------------------------------]]
-
-local Name, WeeklyRewards = ...
-
-WeeklyRewards = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
-
-local Broker, Button, Data
-
-local CATALYST_CHARGES = "You have %s Catalyst |4charge:charges; available."
-local REWARDS_AVAILABLE = "Rewards Available!"
-local WEEKLY_REWARDS = "Weekly Rewards"
+local L = T.Locale
 
 local CatalystCharges = 0
 local CatalystCurrencyId = 2796
 local Earned = 0
-local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
+
+local Activities, Broker, Button
 
 local function HasRewards() return C_WeeklyRewards.HasAvailableRewards() end
 
@@ -30,58 +19,56 @@ end
 local function OnEnter(tooltip)
     if InCombatLockdown() or HasRewards() then return end
 
-    tooltip:AddLine(WEEKLY_REWARDS)
+    tooltip:AddLine(L["Weekly Rewards"])
     tooltip:AddLine(" ")
 
-    for i = 1, #WeeklyRewards do
-        tooltip:AddLine(WeeklyRewards[i].Header)
+    for i = 1, #Activities do
+        tooltip:AddLine(Activities[i].Header)
 
-        for _, v in ipairs(WeeklyRewards[i]) do
+        for _, v in ipairs(Activities[i]) do
             tooltip:AddDoubleLine(v.textLeft, v.textRight, v.color.r, v.color.g, v.color.b, v.color.r, v.color.g, v.color.b)
         end
 
         tooltip:AddLine(" ")
     end
 
-    tooltip:AddLine(format(CATALYST_CHARGES, CatalystCharges))
+    tooltip:AddLine(format(L["Catalyst Charges"], CatalystCharges))
     tooltip:AddLine(" ")
 
     tooltip:AddLine(WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS, 1, 1, 1)
 end
 
-local function UpdateCatalyst(_, currencyType)
-    C_Timer.After(1, function()
-        if currencyType == CatalystCurrencyId then
-            CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
-        end
-    end)
+local function UpdateCatalyst(_, currencyType, quantity)
+    if currencyType == CatalystCurrencyId then
+        CatalystCharges = quantity
+    end
 end
 
 local function UpdateRewards()
     C_Timer.After(1, function()
         if HasRewards() then
             Broker.label = nil
-            Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(REWARDS_AVAILABLE)
+            Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(L["Rewards Available"])
             return
         else
-            Broker.label = WEEKLY_REWARDS
+            Broker.label = L["Weekly Rewards"]
         end
 
         local ActivityInfo = C_WeeklyRewards.GetActivities()
         if ActivityInfo and #ActivityInfo > 0 then
             Earned = 0
 
-            if not WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
-                WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or UNKNOWN
+            if not Activities[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
+                Activities[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or UNKNOWN
             end
 
             for _, activity in pairs(ActivityInfo) do
-                local Row = WeeklyRewards[activity.type][activity.index]
+                local Row = Activities[activity.type][activity.index]
 
                 Row.color = { r = 0.5, g = 0.5, b = 0.5 }
                 Row.level = activity.level
                 Row.progress = activity.progress
-                Row.textLeft = format(WeeklyRewards[activity.type].ThresholdString or UNKNOWN, activity.threshold)
+                Row.textLeft = format(Activities[activity.type].ThresholdString or UNKNOWN, activity.threshold)
                 Row.textRight = format(GENERIC_FRACTION_STRING, activity.progress, activity.threshold)
                 Row.threshold = activity.threshold
                 Row.unlocked = activity.progress >= activity.threshold
@@ -102,80 +89,51 @@ local function UpdateRewards()
             end
         end
 
-        Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), ValueColor)
+        Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), T.ValueColor)
     end)
 end
 
 local function UpdateButton()
-    if Data.global.minimap.hide then
+    if T.db.minimap.hide then
         Button:Hide(Name)
     else
         Button:Show(Name)
     end
 end
 
-local function Enable(event, addOnName)
-    local Defaults = {
-        global = {
-            minimap = {
-                hide = false
-            }
-        }
-    }
-
-    if event == "ADDON_LOADED" and addOnName == Name then
-        WeeklyRewards:UnregisterEvent("ADDON_LOADED")
-
-        Button = LibStub("LibDBIcon-1.0")
-        Data = LibStub("AceDB-3.0"):New("TherapyWeeklyRewardsDB", Defaults, true)
-
-        local LDB = LibStub("LibDataBroker-1.1")
-        if LDB then
-            ---@diagnostic disable-next-line: missing-fields
-            Broker = LDB:NewDataObject(WEEKLY_REWARDS, {
-                type = "data source",
-                label = WEEKLY_REWARDS,
-                text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
-                icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
-            })
-        end
-
-        if Button then
-            ---@diagnostic disable-next-line: param-type-mismatch
-            Button:Register(Name, Broker, Data.global.minimap)
-        end
-    end
-
+local function Enable()
     if (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) and not C_WeeklyRewards.IsWeeklyChestRetired() then
+        Activities = {}
+
+        Broker = T.Broker
+        Button = T.Button
+
         for i = 1, 3 do
-            WeeklyRewards[i] = CreateFrame("Frame")
-            WeeklyRewards[i].Header = (i == 1 and DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
-            WeeklyRewards[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
-            WeeklyRewards[i][1] = CreateFrame("Frame")
-            WeeklyRewards[i][2] = CreateFrame("Frame")
-            WeeklyRewards[i][3] = CreateFrame("Frame")
+            Activities[i] = CreateFrame("Frame")
+            Activities[i].Header = (i == 1 and DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
+            Activities[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
+            Activities[i][1] = CreateFrame("Frame")
+            Activities[i][2] = CreateFrame("Frame")
+            Activities[i][3] = CreateFrame("Frame")
         end
 
         Broker.OnClick = Click
         Broker.OnTooltipShow = OnEnter
 
-        WeeklyRewards:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
-        WeeklyRewards:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
+        EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
+        EventRegistry:RegisterFrameEventAndCallback("WEEKLY_REWARDS_UPDATE", UpdateRewards)
+
+        CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
 
         UpdateButton()
-        UpdateCatalyst(nil, CatalystCurrencyId)
         UpdateRewards()
-    end
-
-    SLASH_THERAPYWEEKLYREWARDS1 = "/tww"
-    SlashCmdList["THERAPYWEEKLYREWARDS"] = function(message)
-        if strlen(message) > 0 and message == "minimap" then
-            Data.global.minimap.hide = not Data.global.minimap.hide
-            UpdateButton()
-        else
-            print([[|cff33937fTherapy|r Weekly Rewards: Type "/tww minimap" to toggle the minimap button.]])
-        end
     end
 end
 
-WeeklyRewards:RegisterEvent("ADDON_LOADED", Enable)
+EventRegistry:RegisterFrameEventAndCallback("PLAYER_LOGIN", function(owner)
+    if IsLoggedIn() then
+        EventRegistry:UnregisterFrameEventAndCallback("PLAYER_LOGIN", owner)
+
+        Enable()
+    end
+end, T)
