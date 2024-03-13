@@ -1,67 +1,65 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.42 (March 10, 2024)
+    Therapy Weekly Rewards 1.42 (March 13, 2024)
 
 ----------------------------------------------------------------------]]
 
-local name, ns = ...
+local Name, T = ...
 
 local GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 
-ns.Name = name
-ns.Title = GetAddOnMetadata(name, "Title")
-ns.Version = GetAddOnMetadata(name, "Version")
+T.Title = GetAddOnMetadata(Name, "Title")
+T.Version = GetAddOnMetadata(Name, "Version")
 
-ns.Locale = {}
+T.Locale = {}
 
-ns.ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
+T.ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
 local function LoadDatabase()
     local db = TherapyWeeklyRewardsDB
 
     if #db == 0 then
-        for key, value in pairs(ns.defaults) do
+        for key, value in pairs(T.Defaults) do
             if db[key] == nil then
                 db[key] = value
             end
         end
     end
 
-    if not db.version or db.version ~= ns.Version then
-        db.version = ns.Version
+    if not db.version or db.version ~= T.Version then
+        db.version = T.Version
     end
 
-    ns.defaults = nil
+    T.Defaults = nil
 
-    ns.db = db
+    T.db = db
 end
 
 local function Initialize()
     local LDB = LibStub("LibDataBroker-1.1")
 
     if LDB then
-        ns.Broker = LDB:NewDataObject(name, {
+        T.Broker = LDB:NewDataObject(Name, {
             type = "data source",
-            label = ns.Locale["Weekly Rewards"],
-            text = WrapTextInColorCode(NOT_APPLICABLE, ns.ValueColor),
+            label = T.Locale["Weekly Rewards"],
+            text = WrapTextInColorCode(NOT_APPLICABLE, T.ValueColor),
             icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
         })
     end
 
-    ns.Button = LibStub("LibDBIcon-1.0")
+    T.Button = LibStub("LibDBIcon-1.0")
 
-    if ns.Button then
+    if T.Button then
         ---@diagnostic disable-next-line: param-type-mismatch
-        ns.Button:Register(name, ns.Broker, ns.db.minimap)
+        T.Button:Register(Name, T.Broker, T.db.minimap)
     end
 end
 
 EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", function(owner, addOnName)
-    if addOnName == name then
+    if addOnName == Name then
         EventRegistry:UnregisterFrameEventAndCallback("ADDON_LOADED", owner)
 
         LoadDatabase()
-
         Initialize()
     end
-end, ns)
+end, T)

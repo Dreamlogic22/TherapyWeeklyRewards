@@ -1,6 +1,6 @@
-local _, ns = ...
+local _, T = ...
 
-ns.defaults = {
+T.Defaults = {
     minimap = {
         hide = false
     }

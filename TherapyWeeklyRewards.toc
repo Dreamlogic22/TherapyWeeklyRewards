@@ -17,9 +17,11 @@ Libs\TaintLess.xml
 
 Init.lua
 
+Config\Settings.lua
+
 Locales\enUS.lua
 
-Config\Settings.lua
+# Core.lua
 
 # WeeklyRewards.lua
 

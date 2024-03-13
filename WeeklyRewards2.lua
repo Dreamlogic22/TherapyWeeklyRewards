@@ -1,12 +1,12 @@
-local Name, WeeklyRewards = ...
+local Name, T = ...
 
-local L = WeeklyRewards.Locale
+local L = T.Locale
 
 local CatalystCharges = 0
 local CatalystCurrencyId = 2796
 local Earned = 0
 
-local Broker, Button
+local Activity, Broker, Button
 
 local function HasRewards() return C_WeeklyRewards.HasAvailableRewards() end
 
@@ -22,10 +22,10 @@ local function OnEnter(tooltip)
     tooltip:AddLine(L["Weekly Rewards"])
     tooltip:AddLine(" ")
 
-    for i = 1, #WeeklyRewards do
-        tooltip:AddLine(WeeklyRewards[i].Header)
+    for i = 1, #Activity do
+        tooltip:AddLine(Activity[i].Header)
 
-        for _, v in ipairs(WeeklyRewards[i]) do
+        for _, v in ipairs(Activity[i]) do
             tooltip:AddDoubleLine(v.textLeft, v.textRight, v.color.r, v.color.g, v.color.b, v.color.r, v.color.g, v.color.b)
         end
 
@@ -58,17 +58,17 @@ local function UpdateRewards()
         if ActivityInfo and #ActivityInfo > 0 then
             Earned = 0
 
-            if not WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
-                WeeklyRewards[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or UNKNOWN
+            if not Activity[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
+                Activity[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or UNKNOWN
             end
 
             for _, activity in pairs(ActivityInfo) do
-                local Row = WeeklyRewards[activity.type][activity.index]
+                local Row = Activity[activity.type][activity.index]
 
                 Row.color = { r = 0.5, g = 0.5, b = 0.5 }
                 Row.level = activity.level
                 Row.progress = activity.progress
-                Row.textLeft = format(WeeklyRewards[activity.type].ThresholdString or UNKNOWN, activity.threshold)
+                Row.textLeft = format(Activity[activity.type].ThresholdString or UNKNOWN, activity.threshold)
                 Row.textRight = format(GENERIC_FRACTION_STRING, activity.progress, activity.threshold)
                 Row.threshold = activity.threshold
                 Row.unlocked = activity.progress >= activity.threshold
@@ -89,7 +89,7 @@ local function UpdateRewards()
             end
         end
 
-        Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), WeeklyRewards.ValueColor)
+        Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), T.ValueColor)
     end)
 end
 
@@ -103,16 +103,17 @@ end
 
 local function Enable()
     if (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) and not C_WeeklyRewards.IsWeeklyChestRetired() then
-        Broker = WeeklyRewards.Broker
-        Button = WeeklyRewards.Button
+        Activity = {}
+        Broker = T.Broker
+        Button = T.Button
 
         for i = 1, 3 do
-            WeeklyRewards[i] = CreateFrame("Frame")
-            WeeklyRewards[i].Header = (i == 1 and DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
-            WeeklyRewards[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
-            WeeklyRewards[i][1] = CreateFrame("Frame")
-            WeeklyRewards[i][2] = CreateFrame("Frame")
-            WeeklyRewards[i][3] = CreateFrame("Frame")
+            Activity[i] = CreateFrame("Frame")
+            Activity[i].Header = (i == 1 and DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
+            Activity[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
+            Activity[i][1] = CreateFrame("Frame")
+            Activity[i][2] = CreateFrame("Frame")
+            Activity[i][3] = CreateFrame("Frame")
         end
 
         Broker.OnClick = Click
@@ -134,4 +135,4 @@ EventRegistry:RegisterFrameEventAndCallback("PLAYER_LOGIN", function(owner)
 
         Enable()
     end
-end, WeeklyRewards)
+end, T)
