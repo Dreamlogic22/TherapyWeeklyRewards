@@ -18,6 +18,7 @@ Libs\TaintLess.xml
 Init.lua
 
 Config\Settings.lua
+Config\Options.lua
 
 Locales\enUS.lua
 

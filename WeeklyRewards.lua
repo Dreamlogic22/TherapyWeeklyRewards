@@ -93,20 +93,11 @@ local function UpdateRewards()
     end)
 end
 
-local function UpdateButton()
-    if T.db.minimap.hide then
-        Button:Hide(Name)
-    else
-        Button:Show(Name)
-    end
-end
-
 local function Enable()
     if (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) and not C_WeeklyRewards.IsWeeklyChestRetired() then
         Activities = {}
 
         Broker = T.Broker
-        Button = T.Button
 
         for i = 1, 3 do
             Activities[i] = CreateFrame("Frame")
@@ -125,7 +116,6 @@ local function Enable()
 
         CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
 
-        UpdateButton()
         UpdateRewards()
     end
 end

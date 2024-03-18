@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.42 (March 13, 2024)
+    Therapy Weekly Rewards 1.42 (March 16, 2024)
 
 ----------------------------------------------------------------------]]
 
@@ -53,6 +53,12 @@ local function Initialize()
         ---@diagnostic disable-next-line: param-type-mismatch
         T.Button:Register(Name, T.Broker, T.db.minimap)
     end
+
+    local AC = LibStub("AceConfig-3.0")
+    local AD = LibStub("AceConfigDialog-3.0")
+
+    AC:RegisterOptionsTable(Name, T.Options)
+    AD:AddToBlizOptions(Name, Name)
 end
 
 EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", function(owner, addOnName)
