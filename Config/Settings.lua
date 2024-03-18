@@ -2,6 +2,7 @@ local _, T = ...
 
 T.Defaults = {
     minimap = {
-        show = true
+        hide = false,
+        lock = false
     }
 }

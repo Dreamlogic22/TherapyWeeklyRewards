@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.42 (March 16, 2024)
+    Therapy Weekly Rewards 1.42 (March 18, 2024)
 
 ----------------------------------------------------------------------]]
 
@@ -35,6 +35,14 @@ local function LoadDatabase()
     T.db = db
 end
 
+local function LoadOptions()
+    local AC = LibStub("AceConfig-3.0")
+    local AD = LibStub("AceConfigDialog-3.0")
+
+    AC:RegisterOptionsTable(Name, T.Options)
+    AD:AddToBlizOptions(Name, Name)
+end
+
 local function Initialize()
     local LDB = LibStub("LibDataBroker-1.1")
 
@@ -47,18 +55,7 @@ local function Initialize()
         })
     end
 
-    T.Button = LibStub("LibDBIcon-1.0")
-
-    if T.Button then
-        ---@diagnostic disable-next-line: param-type-mismatch
-        T.Button:Register(Name, T.Broker, T.db.minimap)
-    end
-
-    local AC = LibStub("AceConfig-3.0")
-    local AD = LibStub("AceConfigDialog-3.0")
-
-    AC:RegisterOptionsTable(Name, T.Options)
-    AD:AddToBlizOptions(Name, Name)
+    T:RegisterButton()
 end
 
 EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", function(owner, addOnName)
@@ -66,6 +63,7 @@ EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", function(owner, addO
         EventRegistry:UnregisterFrameEventAndCallback("ADDON_LOADED", owner)
 
         LoadDatabase()
+        LoadOptions()
         Initialize()
     end
 end, T)

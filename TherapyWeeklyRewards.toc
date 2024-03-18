@@ -11,15 +11,21 @@
 ## X-Wago-ID: BKpqzvGE
 
 Libs\LibStub.lua
+Libs\AceConfigRegistry-3.0.lua
+Libs\AceConfigCmd-3.0.lua
+Libs\AceConfigDialog-3.0.lua
+Libs\AceConfig-3.0.lua
 Libs\LibDataBroker-1.1.lua
 Libs\LibDBIcon-1.0.lua
 Libs\TaintLess.xml
 
 Init.lua
 
+Locales\enUS.lua
+
 Config\Settings.lua
 Config\Options.lua
 
-Locales\enUS.lua
+Modules\Button.lua
 
 WeeklyRewards.lua
