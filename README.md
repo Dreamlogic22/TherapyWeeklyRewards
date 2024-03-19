@@ -1,6 +1,6 @@
 # Therapy Weekly Rewards
 
-**Version 1.41**
+**Version 1.42**
 
 Therapy Weekly Rewards is a data broker that lets you track your weekly progress towards Great Vault rewards and Catalyst charges.  You can use it with any sort of Data Broker display (Titan Panel, Chocolate Bar, ElvUI, &c) or by using a customizable minimap icon.
 
