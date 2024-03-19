@@ -35,35 +35,28 @@ local function LoadDatabase()
     T.db = db
 end
 
-local function LoadOptions()
-    local AC = LibStub("AceConfig-3.0")
-    local AD = LibStub("AceConfigDialog-3.0")
-
-    AC:RegisterOptionsTable(Name, T.Options)
-    AD:AddToBlizOptions(Name, Name)
-end
-
 local function Initialize()
-    local LDB = LibStub("LibDataBroker-1.1")
+    LoadDatabase()
 
-    if LDB then
-        T.Broker = LDB:NewDataObject(Name, {
-            type = "data source",
-            label = T.Locale["Weekly Rewards"],
-            text = WrapTextInColorCode(NOT_APPLICABLE, T.ValueColor),
-            icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
-        })
-    end
+    T.LDB = LibStub("LibDataBroker-1.1")
+    T.LDI = LibStub("LibDBIcon-1.0")
 
-    T:RegisterButton()
+    T.LDB:NewDataObject(Name, {
+        type = "data source",
+        label = T.Locale["Weekly Rewards"],
+        text = WrapTextInColorCode(NOT_APPLICABLE, T.ValueColor),
+        icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
+    })
+
+    T.LDI:Register(Name, T.LDB:GetDataObjectByName(Name), T.db.minimap)
+
+    LibStub("AceConfig-3.0"):RegisterOptionsTable(Name, T.Options)
+    LibStub("AceConfigDialog-3.0"):AddToBlizOptions(Name, Name)
 end
 
 EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", function(owner, addOnName)
     if addOnName == Name then
         EventRegistry:UnregisterFrameEventAndCallback("ADDON_LOADED", owner)
-
-        LoadDatabase()
-        LoadOptions()
         Initialize()
     end
 end, T)

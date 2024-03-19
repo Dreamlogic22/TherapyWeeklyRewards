@@ -1,4 +1,4 @@
-## Interface: 100205
+## Interface: 100206
 ## Title: |cff33ff99Therapy|r Weekly Rewards
 ## Version: 1.42
 ## SavedVariables: TherapyWeeklyRewardsDB
@@ -25,7 +25,5 @@ Locales\enUS.lua
 
 Config\Settings.lua
 Config\Options.lua
-
-Modules\Button.lua
 
 WeeklyRewards.lua

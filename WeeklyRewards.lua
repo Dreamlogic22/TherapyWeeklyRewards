@@ -6,7 +6,7 @@ local CatalystCharges = 0
 local CatalystCurrencyId = 2796
 local Earned = 0
 
-local Activities, Broker, Button
+local Activities, Broker
 
 local function HasRewards() return C_WeeklyRewards.HasAvailableRewards() end
 
@@ -97,7 +97,7 @@ local function Enable()
     if (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) and not C_WeeklyRewards.IsWeeklyChestRetired() then
         Activities = {}
 
-        Broker = T.Broker
+        Broker = T.LDB:GetDataObjectByName(Name)
 
         for i = 1, 3 do
             Activities[i] = CreateFrame("Frame")
@@ -123,7 +123,6 @@ end
 EventRegistry:RegisterFrameEventAndCallback("PLAYER_LOGIN", function(owner)
     if IsLoggedIn() then
         EventRegistry:UnregisterFrameEventAndCallback("PLAYER_LOGIN", owner)
-
         Enable()
     end
 end, T)
