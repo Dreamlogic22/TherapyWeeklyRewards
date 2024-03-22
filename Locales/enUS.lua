@@ -1,5 +1,4 @@
 local _, T = ...
-
 local L = T.Locale
 
 L["Catalyst Charges"] = "You have %s Catalyst |4charge:charges; available."
