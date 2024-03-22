@@ -1,5 +1,4 @@
 local Name, T = ...
-
 local L = T.Locale
 
 T.Options = {
@@ -12,7 +11,7 @@ T.Options = {
             type = "group",
             order = 0,
             get = function(info) return T.db.minimap[info[#info]] end,
-            set = function(info, value) T.db.minimap[info[#info]] = value; T.LDI:Refresh(Name) end,
+            set = function(info, value) T.db.minimap[info[#info]] = value; T.Button:Refresh(Name, T.db.minimap) end,
             args = {
                 hide = {
                     name = L["Hide Minimap Button"],

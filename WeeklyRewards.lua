@@ -1,12 +1,13 @@
 local Name, T = ...
+local E, L = T.EventHandler, T.Locale
 
-local L = T.Locale
+local Activities = {}
+local Broker
 
 local CatalystCharges = 0
 local CatalystCurrencyId = 2796
 local Earned = 0
-
-local Activities, Broker
+local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
 local function HasRewards() return C_WeeklyRewards.HasAvailableRewards() end
 
@@ -39,9 +40,7 @@ local function OnEnter(tooltip)
 end
 
 local function UpdateCatalyst(_, currencyType, quantity)
-    if currencyType == CatalystCurrencyId then
-        CatalystCharges = quantity
-    end
+    if currencyType == CatalystCurrencyId then CatalystCharges = quantity end
 end
 
 local function UpdateRewards()
@@ -89,40 +88,49 @@ local function UpdateRewards()
             end
         end
 
-        Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), T.ValueColor)
+        Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), ValueColor)
     end)
 end
 
 local function Enable()
-    if (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) and not C_WeeklyRewards.IsWeeklyChestRetired() then
-        Activities = {}
+    if IsLoggedIn() then
+        E:UnregisterEvent("PLAYER_LOGIN")
 
-        Broker = T.LDB:GetDataObjectByName(Name)
+        T.Button = LibStub("LibDBIcon-1.0")
 
-        for i = 1, 3 do
-            Activities[i] = CreateFrame("Frame")
-            Activities[i].Header = (i == 1 and DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
-            Activities[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
-            Activities[i][1] = CreateFrame("Frame")
-            Activities[i][2] = CreateFrame("Frame")
-            Activities[i][3] = CreateFrame("Frame")
+        local LDB = LibStub("LibDataBroker-1.1")
+        if LDB then
+            Broker = LDB:NewDataObject(Name, {
+                type = "data source",
+                label = L["Weekly Rewards"],
+                text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
+                icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
+            })
+
+            T.Button:Register(Name, Broker, T.db.minimap)
         end
 
-        Broker.OnClick = Click
-        Broker.OnTooltipShow = OnEnter
+        if (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) and not C_WeeklyRewards.IsWeeklyChestRetired() then
+            for i = 1, 3 do
+                Activities[i] = CreateFrame("Frame")
+                Activities[i].Header = (i == 1 and DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
+                Activities[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
+                Activities[i][1] = CreateFrame("Frame")
+                Activities[i][2] = CreateFrame("Frame")
+                Activities[i][3] = CreateFrame("Frame")
+            end
 
-        EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
-        EventRegistry:RegisterFrameEventAndCallback("WEEKLY_REWARDS_UPDATE", UpdateRewards)
+            Broker.OnClick = Click
+            Broker.OnTooltipShow = OnEnter
 
-        CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
+            CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
 
-        UpdateRewards()
+            E:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
+            E:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
+
+            UpdateRewards()
+        end
     end
 end
 
-EventRegistry:RegisterFrameEventAndCallback("PLAYER_LOGIN", function(owner)
-    if IsLoggedIn() then
-        EventRegistry:UnregisterFrameEventAndCallback("PLAYER_LOGIN", owner)
-        Enable()
-    end
-end, T)
+E:RegisterEvent("PLAYER_LOGIN", Enable)
