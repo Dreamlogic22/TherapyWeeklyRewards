@@ -5,7 +5,7 @@ local Activities = {}
 local Broker
 
 local CatalystCharges = 0
-local CatalystCurrencyId = 2796
+local CatalystCurrencyId = 2912
 local Earned = 0
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 

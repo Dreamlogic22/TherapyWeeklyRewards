@@ -1,9 +1,13 @@
+### April 23, 2024 ###
+* Add app icon.
+* Update Catalyst Currency display for Season Four.
+
 ### March 22, 2024 ###
 * Initialize database on first install.  Closes [#7](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/7)
 * Refactor event handling.
 
 ### March 19, 2024 ###
-* Updated TOC for 10.2.6
+* Update TOC for 10.2.6
 * Add a minimap icon for users who do not wish to install a data display. Closes [#4](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/4)
 * Add configuration panel.
 
