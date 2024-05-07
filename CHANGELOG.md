@@ -1,3 +1,6 @@
+### May 7, 2024 ###
+* Update TOC for 10.2.7.
+
 ### April 23, 2024 ###
 * Add app icon.
 * Update Catalyst Currency display for Season Four.
@@ -7,12 +10,12 @@
 * Refactor event handling.
 
 ### March 19, 2024 ###
-* Update TOC for 10.2.6
+* Update TOC for 10.2.6.
 * Add a minimap icon for users who do not wish to install a data display. Closes [#4](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/4)
 * Add configuration panel.
 
 ### January 18, 2024 ###
-* Update TOC for 10.2.5
+* Update TOC for 10.2.5.
 
 ### January 3, 2024 ###
 * Catalyst Charges will now update properly. Closes [#2](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/2).
