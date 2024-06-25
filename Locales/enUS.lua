@@ -1,4 +1,7 @@
+---@type string, TherapyWeeklyRewards
 local _, T = ...
+
+---@class Locale
 local L = T.Locale
 
 L["Catalyst Charges"] = "You have %s Catalyst |4charge:charges; available."

@@ -1,9 +1,10 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.44 (April 23, 2024)
+    Therapy Weekly Rewards 1.44 (June 25, 2024)
 
 ----------------------------------------------------------------------]]
 
+---@type string, TherapyWeeklyRewards
 local Name, T = ...
 
 local GetAddOnMetadata = C_AddOns.GetAddOnMetadata
@@ -35,7 +36,7 @@ local function LoadDatabase()
     T.Defaults = nil
 end
 
-T.EventHandler = LibStub("AceEvent-3.0"):Embed(CreateFrame("Frame"))
+T.EventHandler = LibStub("AceEvent-3.0"):Embed({})
 T.EventHandler:RegisterEvent("ADDON_LOADED", function(event, addOnName)
     if addOnName == Name then
         T.EventHandler:UnregisterEvent(event)

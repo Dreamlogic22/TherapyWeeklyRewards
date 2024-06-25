@@ -1,4 +1,6 @@
+---@type string, TherapyWeeklyRewards
 local Name, T = ...
+
 local E, L = T.EventHandler, T.Locale
 
 local Activities = {}
@@ -96,7 +98,7 @@ local function Enable()
     if IsLoggedIn() then
         E:UnregisterEvent("PLAYER_LOGIN")
 
-        T.Button = LibStub("LibDBIcon-1.0")
+        T.Icon = LibStub("LibDBIcon-1.0")
 
         local LDB = LibStub("LibDataBroker-1.1")
         if LDB then
@@ -107,7 +109,7 @@ local function Enable()
                 icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
             })
 
-            T.Button:Register(Name, Broker, T.db.minimap)
+            T.Icon:Register(Name, Broker, T.db.minimap)
         end
 
         if (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) and not C_WeeklyRewards.IsWeeklyChestRetired() then
