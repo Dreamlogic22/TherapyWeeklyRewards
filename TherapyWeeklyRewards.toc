@@ -22,23 +22,23 @@ Libs\LibDataBroker-1.1.lua
 Libs\LibStub.lua
 Libs\TaintLess.xml
 
-# Init.lua
+Init.lua
 
-# Locales\enUS.lua
+Locales\enUS.lua
 
-# Config\Settings.lua
-# Config\Options.lua
+Config\Settings.lua
+Config\Options.lua
 
-# WeeklyRewards.lua
+WeeklyRewards.lua
 
 ## dev
-dev\Core\Init.lua
+# dev\Core\Init.lua
 
-dev\Locale\enUS.lua
+# dev\Locale\enUS.lua
 
-dev\Config\Settings.lua
+# dev\Config\Settings.lua
 
-dev\Core\Components\Console.lua
-dev\Core\Components\EventHandler.lua
+# dev\Core\Components\Console.lua
+# dev\Core\Components\Events.lua
 
-dev\Core\Core.lua
+# dev\Core\Core.lua

@@ -1,11 +1,11 @@
 ---@type string, TherapyWeeklyRewards
 local Name, T = ...
 
-local C, E, L = T.Console, T.EventHandler, T.Locale
+local C, E, L = T.Console, T.Events, T.Locale
 
 T.CurrentSeason = 0
 
----@param event string
+---@param event WowEvent
 local function GetSeason(event)
     E:UnregisterEvent(event)
 
