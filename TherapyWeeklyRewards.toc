@@ -36,7 +36,8 @@ WeeklyRewards.lua
 
 # dev\Locale\enUS.lua
 
-# dev\Config\Settings.lua
+# Config\Settings.lua
+# Config\Options.lua
 
 # dev\Core\Components\Console.lua
 # dev\Core\Components\Events.lua
