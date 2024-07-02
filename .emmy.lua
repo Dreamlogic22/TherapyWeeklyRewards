@@ -9,6 +9,7 @@
 ---@field Version string
 ---@field db Settings
 ---@field Console AceConsole-3.0
+---@field LDB LibDataBroker-1.1
 
 ---@alias AppMessage
 ---| "APP_SEASON_UPDATE"

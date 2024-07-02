@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.46 (June 28, 2024)
+    Therapy Weekly Rewards 1.46 (July 1, 2024)
 
 ----------------------------------------------------------------------]]
 
@@ -13,7 +13,7 @@ T.Title = GetAddOnMetadata(Name, "Title")
 T.Version = GetAddOnMetadata(Name, "Version")
 
 T.Console = {}
-T.EventHandler = {}
+T.Events = {}
 T.Locale = {}
 
 -- temp

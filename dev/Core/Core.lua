@@ -4,6 +4,7 @@ local Name, T = ...
 local C, E, L = T.Console, T.Events, T.Locale
 
 T.CurrentSeason = 0
+T.ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
 ---@param event WowEvent
 local function GetSeason(event)
@@ -18,6 +19,22 @@ local function GetSeason(event)
         C:Printf("Current season is %s", T.CurrentSeason)
 
         E:SendMessage("APP_SEASON_UPDATE")
+    end
+end
+
+local function ConstructBroker()
+    T.Icon = LibStub("LibDBIcon-1.0")
+
+    local LDB = LibStub("LibDataBroker-1.1")
+    if LDB then
+        LDB:NewDataObject(Name, {
+            type = "data source",
+            label = L.WEEKLY_REWARDS,
+            text = WrapTextInColorCode(NOT_APPLICABLE, T.ValueColor),
+            icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
+        })
+
+        T.LDB = LDB
     end
 end
 
@@ -59,6 +76,7 @@ local function OnLoad(event, addOnName)
         E:UnregisterEvent(event)
 
         LoadDatabase()
+        ConstructBroker()
 
         LibStub("AceConfig-3.0"):RegisterOptionsTable(Name, T.Options)
         LibStub("AceConfigDialog-3.0"):AddToBlizOptions(Name, Name)
