@@ -3,6 +3,7 @@ local Name, T = ...
 
 local C, E, L = T.Console, T.Events, T.Locale
 
+T.CatalystCharges = 0
 T.CurrentSeason = 0
 T.ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 

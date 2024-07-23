@@ -37,6 +37,7 @@ local function LoadDatabase()
 end
 
 T.EventHandler = LibStub("AceEvent-3.0"):Embed({})
+
 T.EventHandler:RegisterEvent("ADDON_LOADED", function(event, addOnName)
     if addOnName == Name then
         T.EventHandler:UnregisterEvent(event)

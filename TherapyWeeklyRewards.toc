@@ -1,4 +1,4 @@
-## Interface: 100207
+## Interface: 110002
 ## Title: |cff33ff99Therapy|r Weekly Rewards
 ## Version: 1.46
 ## SavedVariables: TherapyWeeklyRewardsDB
@@ -22,24 +22,25 @@ Libs\LibDataBroker-1.1.lua
 Libs\LibStub.lua
 Libs\TaintLess.xml
 
-# Init.lua
+Init.lua
 
-# Locales\enUS.lua
-
-# Config\Settings.lua
-# Config\Options.lua
-
-# WeeklyRewards.lua
-
-## dev
-dev\Core\Init.lua
-
-dev\Locale\enUS.lua
+Locales\enUS.lua
 
 Config\Settings.lua
 Config\Options.lua
 
-dev\Core\Components\Console.lua
-dev\Core\Components\Events.lua
+WeeklyRewards.lua
 
-dev\Core\Core.lua
+## dev
+# dev\Core\Init.lua
+
+# dev\Locale\enUS.lua
+
+# Config\Settings.lua
+# Config\Options.lua
+
+# dev\Core\Events.lua
+
+# dev\Core\Startup.lua
+
+# dev\Modules\Activities.lua
