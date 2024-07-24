@@ -1,4 +1,4 @@
-## Interface: 110002
+## Interface: 110000, 110002
 ## Title: |cff33ff99Therapy|r Weekly Rewards
 ## Version: 1.46
 ## SavedVariables: TherapyWeeklyRewardsDB
@@ -30,17 +30,3 @@ Config\Settings.lua
 Config\Options.lua
 
 WeeklyRewards.lua
-
-## dev
-# dev\Core\Init.lua
-
-# dev\Locale\enUS.lua
-
-# Config\Settings.lua
-# Config\Options.lua
-
-# dev\Core\Events.lua
-
-# dev\Core\Startup.lua
-
-# dev\Modules\Activities.lua

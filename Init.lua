@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.44 (June 25, 2024)
+    Therapy Weekly Rewards 1.45 (July 23, 2024)
 
 ----------------------------------------------------------------------]]
 
@@ -36,11 +36,11 @@ local function LoadDatabase()
     T.Defaults = nil
 end
 
-T.EventHandler = LibStub("AceEvent-3.0"):Embed({})
+T.Events = LibStub("AceEvent-3.0"):Embed({})
 
-T.EventHandler:RegisterEvent("ADDON_LOADED", function(event, addOnName)
+T.Events:RegisterEvent("ADDON_LOADED", function(event, addOnName)
     if addOnName == Name then
-        T.EventHandler:UnregisterEvent(event)
+        T.Events:UnregisterEvent(event)
 
         LoadDatabase()
 

@@ -1,7 +1,9 @@
 ---@type string, TherapyWeeklyRewards
 local Name, T = ...
 
-local E, L = T.EventHandler, T.Locale
+local HasRewards = C_WeeklyRewards.HasAvailableRewards
+
+local E, L = T.Events, T.Locale
 
 local Activities = {}
 local Broker
@@ -10,8 +12,6 @@ local CatalystCharges = 0
 local CatalystCurrencyId = 2912
 local Earned = 0
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
-
-local function HasRewards() return C_WeeklyRewards.HasAvailableRewards() end
 
 local function Click()
     if InCombatLockdown() or HasRewards() then return end
