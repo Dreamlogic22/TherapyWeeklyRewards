@@ -3,7 +3,7 @@ local Name, T = ...
 
 local HasRewards = C_WeeklyRewards.HasAvailableRewards
 
-local E, L = T.Events, T.Locale
+local L = T.Locale
 
 local Activities = {}
 local Broker
@@ -95,44 +95,45 @@ local function UpdateRewards()
 end
 
 local function Enable()
-    if IsLoggedIn() then
-        E:UnregisterEvent("PLAYER_LOGIN")
+    T.Icon = LibStub("LibDBIcon-1.0")
 
-        T.Icon = LibStub("LibDBIcon-1.0")
+    local LDB = LibStub("LibDataBroker-1.1")
+    if LDB then
+        Broker = LDB:NewDataObject(Name, {
+            type = "data source",
+            label = L.WEEKLY_REWARDS,
+            text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
+            icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
+        })
 
-        local LDB = LibStub("LibDataBroker-1.1")
-        if LDB then
-            Broker = LDB:NewDataObject(Name, {
-                type = "data source",
-                label = L["Weekly Rewards"],
-                text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
-                icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
-            })
+        T.Icon:Register(Name, Broker, T.db.minimap)
+    end
 
-            T.Icon:Register(Name, Broker, T.db.minimap)
+    if (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) and not C_WeeklyRewards.IsWeeklyChestRetired() then
+        for i = 1, 3 do
+            Activities[i] = CreateFrame("Frame")
+            Activities[i].Header = (i == 1 and DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
+            Activities[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
+            Activities[i][1] = CreateFrame("Frame")
+            Activities[i][2] = CreateFrame("Frame")
+            Activities[i][3] = CreateFrame("Frame")
         end
 
-        if (UnitLevel("player") >= GetMaxLevelForLatestExpansion()) and not C_WeeklyRewards.IsWeeklyChestRetired() then
-            for i = 1, 3 do
-                Activities[i] = CreateFrame("Frame")
-                Activities[i].Header = (i == 1 and DUNGEONS) or (i == 2 and PVP) or (i == 3 and RAIDS)
-                Activities[i].ThresholdString = (i == 1 and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (i == 2 and WEEKLY_REWARDS_THRESHOLD_PVP)
-                Activities[i][1] = CreateFrame("Frame")
-                Activities[i][2] = CreateFrame("Frame")
-                Activities[i][3] = CreateFrame("Frame")
-            end
+        Broker.OnClick = Click
+        Broker.OnTooltipShow = OnEnter
 
-            Broker.OnClick = Click
-            Broker.OnTooltipShow = OnEnter
+        CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
 
-            CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
+        EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
+        EventRegistry:RegisterFrameEventAndCallback("WEEKLY_REWARDS_UPDATE", UpdateRewards)
 
-            E:RegisterEvent("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
-            E:RegisterEvent("WEEKLY_REWARDS_UPDATE", UpdateRewards)
-
-            UpdateRewards()
-        end
+        UpdateRewards()
     end
 end
 
-E:RegisterEvent("PLAYER_LOGIN", Enable)
+EventRegistry:RegisterFrameEventAndCallback("PLAYER_LOGIN", function(ownerId)
+    if IsLoggedIn() then
+        EventRegistry:UnregisterFrameEventAndCallback("PLAYER_LOGIN", ownerId)
+        Enable()
+    end
+end)

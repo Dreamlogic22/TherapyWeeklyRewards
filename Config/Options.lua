@@ -5,7 +5,7 @@ local L = T.Locale
 
 ---@class Options
 T.Options = {
-    name = T.Title,
+    name = C_AddOns.GetAddOnMetadata(Name, "Title"),
     type = "group",
     args = {
         minimap = {

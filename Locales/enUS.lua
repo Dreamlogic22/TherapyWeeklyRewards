@@ -2,10 +2,13 @@
 local _, T = ...
 
 ---@class Locale
-local L = T.Locale
+local L = {}
 
-L["Catalyst Charges"] = "You have %s Catalyst |4charge:charges; available."
-L["Hide Minimap Button"] = "Hide Minimap Button"
-L["Lock Minimap Button"] = "Lock Minimap Button"
-L["Rewards Available"] = "Rewards Available!"
-L["Weekly Rewards"] = "Weekly Rewards"
+L.CATALYST_CHARGES = "You have %s Catalyst |4charge:charges; available."
+L.ERR_SEASON_LOAD = "Could not find the current season.  Please try reloading to correct the issue."
+L.HIDE_MINIMAP_BUTTON = "Hide Minimap Button"
+L.LOCK_MINIMAP_BUTTON = "Lock Minimap Button"
+L.REWARDS_AVAILABLE = "Rewards Available!"
+L.WEEKLY_REWARDS = "Weekly Rewards"
+
+T.Locale = L
