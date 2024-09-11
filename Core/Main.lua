@@ -146,8 +146,8 @@ local function Enable(ownerId)
         if CurrentSeason > 0 and not C_WeeklyRewards.IsWeeklyChestRetired() then
             T.Icon:Register(Name, Broker, T.db.minimap)
 
-            SetupActivity(Enum.WeeklyRewardChestThresholdType.Activities)
             SetupActivity(Enum.WeeklyRewardChestThresholdType.Raid)
+            SetupActivity(Enum.WeeklyRewardChestThresholdType.Activities)
             SetupActivity(Enum.WeeklyRewardChestThresholdType.World)
 
             CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
