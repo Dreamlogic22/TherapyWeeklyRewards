@@ -1,4 +1,11 @@
 ### TBD ###
+* Add "Rewards Available" tooltip to minimap icon.  Closes [#10](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/10)
+* Add World activities.
+* Improve eligiblity checks.  Closes [#9](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/9)
+* Remove Ranked PvP activities.
+* Show Catalyst charges when rewards are available.  CLoses [#3](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/3)
+* Test for empty activity returns from API.
+* Update Catalyst Currency display for The War Within Season One.
 * Update [Taintless](https://www.townlong-yak.com/addons/taintless/release/24-07-27).
 
 ### August 13, 2024 ###
@@ -12,7 +19,7 @@
 
 ### April 23, 2024 ###
 * Add app icon.
-* Update Catalyst Currency display for Season Four.
+* Update Catalyst Currency display for Dragonflight Season Four.
 
 ### March 22, 2024 ###
 * Initialize database on first install.  Closes [#7](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/7)

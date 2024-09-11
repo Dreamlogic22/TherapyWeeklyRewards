@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.48 (September 9, 2024)
+    Therapy Weekly Rewards 1.48 (September 10, 2024)
 
 ----------------------------------------------------------------------]]
 
@@ -14,16 +14,10 @@ local GREEN_FONT_COLOR = GREEN_FONT_COLOR
 local Activities = {}
 local Broker
 local CatalystCharges = 0
-local CatalystCurrencyId = 2912
+local CatalystCurrencyId = 2813
 local Earned = 0
 local HasRewards = C_WeeklyRewards.HasAvailableRewards
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
-
-local Keys = {
-    Dungeons = Enum.WeeklyRewardChestThresholdType.Activities,
-    Raid = Enum.WeeklyRewardChestThresholdType.Raid,
-    World = Enum.WeeklyRewardChestActivityType.World
-}
 
 local function AddCatalystInfo(tooltip)
     tooltip:AddLine(format(L.CATALYST_CHARGES, CatalystCharges))
@@ -54,10 +48,10 @@ local function OnEnter(tooltip)
     tooltip:AddLine(L.WEEKLY_REWARDS)
     tooltip:AddLine(" ")
 
-    for i = 1, #Activities do
-        tooltip:AddLine(Activities[i].Header)
+    for _, Activity in next, Activities do
+        tooltip:AddLine(Activity.Header)
 
-        for _, v in ipairs(Activities[i]) do
+        for _, v in ipairs(Activity) do
             tooltip:AddDoubleLine(v.textLeft, v.textRight, v.color.r, v.color.g, v.color.b, v.color.r, v.color.g, v.color.b)
         end
 
@@ -90,11 +84,11 @@ local function UpdateRewards()
         if ActivityInfo and #ActivityInfo > 0 then
             Earned = 0
 
-            if not Activities[Keys.Raid].ThresholdString then
-                Activities[Keys.Raid].ThresholdString = ActivityInfo[Keys.Raid].raidString or UNKNOWN
+            if not Activities[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
+                Activities[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or UNKNOWN
             end
 
-            for _, activity in pairs(ActivityInfo) do
+            for _, activity in ipairs(ActivityInfo) do
                 local Row = Activities[activity.type][activity.index]
 
                 Row.color = GRAY_FONT_COLOR
@@ -106,9 +100,9 @@ local function UpdateRewards()
                 Row.unlocked = activity.progress >= activity.threshold
 
                 if Row.unlocked then
-                    if activity.type == Keys.Raid then
+                    if activity.type == Enum.WeeklyRewardChestThresholdType.Raid then
                         Row.textRight = DifficultyUtil.GetDifficultyName(activity.level)
-                    elseif activity.type == Keys.Dungeons then
+                    elseif activity.type == Enum.WeeklyRewardChestThresholdType.Activities then
                         Row.textRight = C_WeeklyRewards.GetDifficultyIDForActivityTier(activity.activityTierID) == DifficultyUtil.ID.DungeonHeroic and WEEKLY_REWARDS_HEROIC or format(WEEKLY_REWARDS_MYTHIC, activity.level)
                     elseif activity.type == Enum.WeeklyRewardChestThresholdType.World then
                         Row.textRight = GREAT_VAULT_WORLD_TIER:format(activity.level)
@@ -130,6 +124,16 @@ local function UpdateRewards()
     end)
 end
 
+---@param activity Enum.WeeklyRewardChestThresholdType
+local function SetupActivity(activity)
+    Activities[activity] = CreateFrame("Frame")
+    Activities[activity].Header = (activity == Enum.WeeklyRewardChestThresholdType.Activities and DUNGEONS) or (activity == Enum.WeeklyRewardChestThresholdType.Raid and RAIDS) or (activity == Enum.WeeklyRewardChestThresholdType.World and WORLD)
+    Activities[activity].ThresholdString = (activity == Enum.WeeklyRewardChestThresholdType.Activities and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (activity == Enum.WeeklyRewardChestThresholdType.World and WEEKLY_REWARDS_THRESHOLD_WORLD)
+    Activities[activity][1] = CreateFrame("Frame")
+    Activities[activity][2] = CreateFrame("Frame")
+    Activities[activity][3] = CreateFrame("Frame")
+end
+
 ---@param ownerId number
 local function Enable(ownerId)
     EventRegistry:UnregisterFrameEventAndCallback("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", ownerId)
@@ -142,14 +146,9 @@ local function Enable(ownerId)
         if CurrentSeason > 0 and not C_WeeklyRewards.IsWeeklyChestRetired() then
             T.Icon:Register(Name, Broker, T.db.minimap)
 
-            for i = 1, 3 do
-                Activities[i] = CreateFrame("Frame")
-                Activities[i].Header = (i == Keys.Dungeons and DUNGEONS) or (i == Keys.Raid and RAIDS) or (i == Keys.World and WORLD)
-                Activities[i].ThresholdString = (i == Keys.Dungeons and WEEKLY_REWARDS_THRESHOLD_DUNGEONS) or (i == Keys.World and WEEKLY_REWARDS_THRESHOLD_WORLD)
-                Activities[i][Keys.Dungeons] = CreateFrame("Frame")
-                Activities[i][Keys.Raid] = CreateFrame("Frame")
-                Activities[i][Keys.World] = CreateFrame("Frame")
-            end
+            SetupActivity(Enum.WeeklyRewardChestThresholdType.Activities)
+            SetupActivity(Enum.WeeklyRewardChestThresholdType.Raid)
+            SetupActivity(Enum.WeeklyRewardChestThresholdType.World)
 
             CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
 
