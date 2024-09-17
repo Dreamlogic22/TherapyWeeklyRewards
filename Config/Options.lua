@@ -17,12 +17,12 @@ T.Options = {
             set = function(info, value) T.db.minimap[info[#info]] = value; T.Icon:Refresh(Name, T.db.minimap) end,
             args = {
                 hide = {
-                    name = L["Hide Minimap Button"],
+                    name = L.HIDE_MINIMAP_BUTTON,
                     order = 0,
                     type = "toggle"
                 },
                 lock = {
-                    name = L["Lock Minimap Button"],
+                    name = L.LOCK_MINIMAP_BUTTON,
                     order = 1,
                     type = "toggle",
                     disabled = function() return T.db.minimap.hide end
