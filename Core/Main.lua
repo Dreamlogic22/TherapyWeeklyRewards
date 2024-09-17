@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.49 (September 10, 2024)
+    Therapy Weekly Rewards 1.50 (September 17, 2024)
 
 ----------------------------------------------------------------------]]
 
@@ -12,6 +12,7 @@ local GRAY_FONT_COLOR = GRAY_FONT_COLOR
 local GREEN_FONT_COLOR = GREEN_FONT_COLOR
 
 local Activities = {}
+local ActivityOrder = { 3, 1, 6 }
 local Broker
 local CatalystCharges = 0
 local CatalystCurrencyId = 2813
@@ -77,8 +78,6 @@ local function UpdateRewards()
             Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(L.REWARDS_AVAILABLE)
 
             return
-        else
-            Broker.label = L.WEEKLY_REWARDS
         end
 
         local ActivityInfo = C_WeeklyRewards.GetActivities()
@@ -113,6 +112,8 @@ local function UpdateRewards()
 
                     Earned = Earned + 1
                 end
+
+                Broker.label = L.WEEKLY_REWARDS
 
                 if not Broker.OnClick then
                     Broker.OnClick = OnClick
