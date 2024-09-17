@@ -1,4 +1,4 @@
-### TBD ###
+### September 17, 2024 ###
 * Add "Rewards Available" tooltip to minimap icon.  Closes [#10](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/10)
 * Add World activities.
 * Improve eligiblity checks.  Closes [#9](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/9)
