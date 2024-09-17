@@ -75,6 +75,7 @@ local function UpdateRewards()
         if HasRewards() then
             Broker.label = nil
             Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(L.REWARDS_AVAILABLE)
+
             return
         else
             Broker.label = L.WEEKLY_REWARDS
@@ -113,9 +114,8 @@ local function UpdateRewards()
                     Earned = Earned + 1
                 end
 
-                if not Broker.OnClick or not Broker.OnTooltipShow then
+                if not Broker.OnClick then
                     Broker.OnClick = OnClick
-                    Broker.OnTooltipShow = OnEnter
                 end
 
                 Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), ValueColor)
@@ -212,7 +212,8 @@ local function OnLogin(ownerId)
                 type = "data source",
                 label = L.WEEKLY_REWARDS,
                 text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
-                icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
+                icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]],
+                OnTooltipShow = OnEnter
             })
         end
     end
