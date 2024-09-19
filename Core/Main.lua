@@ -12,12 +12,12 @@ local GRAY_FONT_COLOR = GRAY_FONT_COLOR
 local GREEN_FONT_COLOR = GREEN_FONT_COLOR
 
 local Activities = {}
-local ActivityOrder = { 3, 1, 6 }
 local Broker
 local CatalystCharges = 0
 local CatalystCurrencyId = 2813
 local Earned = 0
 local HasRewards = C_WeeklyRewards.HasAvailableRewards
+local Ready = false
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
 local function AddCatalystInfo(tooltip)
@@ -33,7 +33,7 @@ end
 
 ---@param tooltip GameTooltip
 local function OnEnter(tooltip)
-    if InCombatLockdown() then return end
+    if InCombatLockdown() or not Ready then return end
 
     if HasRewards() then
         if not T.db.minimap.hide then
@@ -72,10 +72,14 @@ local function UpdateCatalyst(_, currencyType, quantity)
 end
 
 local function UpdateRewards()
+    Ready = false
+
     C_Timer.After(1, function()
         if HasRewards() then
             Broker.label = nil
             Broker.text = HEIRLOOM_BLUE_COLOR:WrapTextInColorCode(L.REWARDS_AVAILABLE)
+
+            Ready = true
 
             return
         end
@@ -114,12 +118,9 @@ local function UpdateRewards()
                 end
 
                 Broker.label = L.WEEKLY_REWARDS
-
-                if not Broker.OnClick then
-                    Broker.OnClick = OnClick
-                end
-
                 Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), ValueColor)
+
+                Ready = true
             end
         end
     end)
@@ -150,6 +151,9 @@ local function Enable(ownerId)
             SetupActivity(Enum.WeeklyRewardChestThresholdType.Raid)
             SetupActivity(Enum.WeeklyRewardChestThresholdType.Activities)
             SetupActivity(Enum.WeeklyRewardChestThresholdType.World)
+
+            Broker.OnClick = OnClick
+            Broker.OnTooltipShow = OnEnter
 
             CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
 
@@ -213,8 +217,7 @@ local function OnLogin(ownerId)
                 type = "data source",
                 label = L.WEEKLY_REWARDS,
                 text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
-                icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]],
-                OnTooltipShow = OnEnter
+                icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
             })
         end
     end
