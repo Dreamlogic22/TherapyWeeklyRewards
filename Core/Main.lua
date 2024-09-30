@@ -17,7 +17,7 @@ local CatalystCharges = 0
 local CatalystCurrencyId = 2813
 local Earned = 0
 local HasRewards = C_WeeklyRewards.HasAvailableRewards
-local Ready = false
+local Ready, WatchingLevel = false, false
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
 local function AddCatalystInfo(tooltip)
@@ -141,9 +141,14 @@ local function Enable(ownerId)
     if UnitLevel("player") == GetMaxLevelForLatestExpansion() then
         if ownerId then
             EventRegistry:UnregisterFrameEventAndCallback("PLAYER_LEVEL_UP", ownerId)
+            WatchingLevel = false
         end
     else
-        EventRegistry:RegisterFrameEventAndCallback("PLAYER_LEVEL_UP", Enable)
+        if not WatchingLevel then
+            EventRegistry:RegisterFrameEventAndCallback("PLAYER_LEVEL_UP", Enable)
+            WatchingLevel = true
+        end
+
         return
     end
 
