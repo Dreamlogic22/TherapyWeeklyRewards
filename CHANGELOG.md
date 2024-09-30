@@ -1,3 +1,6 @@
+### September 30, 2024 ###
+* Removed Mythic Plus specific events.
+
 ### September 17, 2024 ###
 * Add "Rewards Available" tooltip to minimap icon.  Closes [#10](https://github.com/Dreamlogic22/TherapyWeeklyRewards/issues/10)
 * Add World activities.
