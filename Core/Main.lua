@@ -17,8 +17,9 @@ local CatalystCharges = 0
 local CatalystCurrencyId = 2813
 local Earned = 0
 local HasRewards = C_WeeklyRewards.HasAvailableRewards
-local Ready, WatchingLevel = false, false
+local Ready = false
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
+local WatchingLevel = false
 
 local function AddCatalystInfo(tooltip)
     tooltip:AddLine(format(L.CATALYST_CHARGES, CatalystCharges))
