@@ -136,32 +136,33 @@ local function SetupActivity(activity)
     Activities[activity][3] = CreateFrame("Frame")
 end
 
----@param ownerId number
+---@param ownerId number?
 local function Enable(ownerId)
-    EventRegistry:UnregisterFrameEventAndCallback("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", ownerId)
-
-    local CurrentSeason = C_MythicPlus.GetCurrentSeason()
-    if CurrentSeason == -1 then
-        print("|cff33ff99Therapy|r:", L.ERR_SEASON_LOAD)
-        return
-    else
-        if CurrentSeason > 0 and not C_WeeklyRewards.IsWeeklyChestRetired() then
-            T.Icon:Register(Name, Broker, T.db.minimap)
-
-            SetupActivity(Enum.WeeklyRewardChestThresholdType.Raid)
-            SetupActivity(Enum.WeeklyRewardChestThresholdType.Activities)
-            SetupActivity(Enum.WeeklyRewardChestThresholdType.World)
-
-            Broker.OnClick = OnClick
-            Broker.OnTooltipShow = OnEnter
-
-            CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
-
-            EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
-            EventRegistry:RegisterFrameEventAndCallback("WEEKLY_REWARDS_UPDATE", UpdateRewards)
-
-            UpdateRewards()
+    if UnitLevel("player") == GetMaxLevelForLatestExpansion() then
+        if ownerId then
+            EventRegistry:UnregisterFrameEventAndCallback("PLAYER_LEVEL_UP", ownerId)
         end
+    else
+        EventRegistry:RegisterFrameEventAndCallback("PLAYER_LEVEL_UP", Enable)
+        return
+    end
+
+    if not C_WeeklyRewards.IsWeeklyChestRetired() then
+        T.Icon:Register(Name, Broker, T.db.minimap)
+
+        SetupActivity(Enum.WeeklyRewardChestThresholdType.Raid)
+        SetupActivity(Enum.WeeklyRewardChestThresholdType.Activities)
+        SetupActivity(Enum.WeeklyRewardChestThresholdType.World)
+
+        Broker.OnClick = OnClick
+        Broker.OnTooltipShow = OnEnter
+
+        CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
+
+        EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
+        EventRegistry:RegisterFrameEventAndCallback("WEEKLY_REWARDS_UPDATE", UpdateRewards)
+
+        UpdateRewards()
     end
 end
 
@@ -207,8 +208,6 @@ local function OnLogin(ownerId)
     if IsLoggedIn() then
         EventRegistry:UnregisterFrameEventAndCallback("PLAYER_LOGIN", ownerId)
 
-        C_MythicPlus.RequestMapInfo()
-
         T.Icon = LibStub("LibDBIcon-1.0")
 
         local LDB = LibStub("LibDataBroker-1.1")
@@ -221,8 +220,11 @@ local function OnLogin(ownerId)
             })
         end
     end
+
+    if C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoW then
+        Enable()
+    end
 end
 
 EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", OnLoad)
-EventRegistry:RegisterFrameEventAndCallback("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", Enable)
 EventRegistry:RegisterFrameEventAndCallback("PLAYER_LOGIN", OnLogin)
