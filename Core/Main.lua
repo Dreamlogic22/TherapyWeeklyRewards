@@ -19,7 +19,6 @@ local Earned = 0
 local HasRewards = C_WeeklyRewards.HasAvailableRewards
 local Ready = false
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
-local WatchingLevel = false
 
 local function AddCatalystInfo(tooltip)
     tooltip:AddLine(format(L.CATALYST_CHARGES, CatalystCharges))
@@ -137,21 +136,9 @@ local function SetupActivity(activity)
     Activities[activity][3] = CreateFrame("Frame")
 end
 
----@param ownerId number?
+---@param ownerId number
 local function Enable(ownerId)
-    if UnitLevel("player") == GetMaxLevelForLatestExpansion() then
-        if ownerId then
-            EventRegistry:UnregisterFrameEventAndCallback("PLAYER_LEVEL_UP", ownerId)
-            WatchingLevel = false
-        end
-    else
-        if not WatchingLevel then
-            EventRegistry:RegisterFrameEventAndCallback("PLAYER_LEVEL_UP", Enable)
-            WatchingLevel = true
-        end
-
-        return
-    end
+    EventRegistry:UnregisterFrameEventAndCallback("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", ownerId)
 
     if not C_WeeklyRewards.IsWeeklyChestRetired() then
         T.Icon:Register(Name, Broker, T.db.minimap)
@@ -226,11 +213,8 @@ local function OnLogin(ownerId)
             })
         end
     end
-
-    if C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoW then
-        Enable()
-    end
 end
 
 EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", OnLoad)
+EventRegistry:RegisterFrameEventAndCallback("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", Enable)
 EventRegistry:RegisterFrameEventAndCallback("PLAYER_LOGIN", OnLogin)
