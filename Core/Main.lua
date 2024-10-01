@@ -228,7 +228,7 @@ local function OnLogin(ownerId)
     end
 
     if C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoW then
-        Enable()
+        C_Timer.After(1, Enable)
     end
 end
 
