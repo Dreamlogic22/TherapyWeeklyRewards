@@ -1,3 +1,6 @@
+### October 22, 2024 ###
+* Update TOC for 11.0.5.
+
 ### September 30, 2024 ###
 * Simplified initialization.
 
