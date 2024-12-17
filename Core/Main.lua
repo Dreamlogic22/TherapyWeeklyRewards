@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.52 (October 22, 2024)
+    Therapy Weekly Rewards 1.53 (December 17, 2024)
 
 ----------------------------------------------------------------------]]
 
@@ -19,7 +19,6 @@ local Earned = 0
 local HasRewards = C_WeeklyRewards.HasAvailableRewards
 local Ready = false
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
-local WatchingLevel = false
 
 local function AddCatalystInfo(tooltip)
     tooltip:AddLine(format(L.CATALYST_CHARGES, CatalystCharges))
@@ -137,19 +136,9 @@ local function SetupActivity(activity)
     Activities[activity][3] = CreateFrame("Frame")
 end
 
----@param ownerId number?
-local function Enable(ownerId)
-    if UnitLevel("player") == GetMaxLevelForLatestExpansion() then
-        if ownerId then
-            EventRegistry:UnregisterFrameEventAndCallback("PLAYER_LEVEL_UP", ownerId)
-            WatchingLevel = false
-        end
-    else
-        if not WatchingLevel then
-            EventRegistry:RegisterFrameEventAndCallback("PLAYER_LEVEL_UP", Enable)
-            WatchingLevel = true
-        end
-
+local function Enable()
+    if UnitLevel("player") ~= GetMaxLevelForLatestExpansion() then
+        EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_LEVEL_UP", Enable)
         return
     end
 
@@ -196,41 +185,27 @@ local function LoadDatabase()
     T.Defaults = nil
 end
 
----@param ownerId number
----@param addOnName string
-local function OnLoad(ownerId, addOnName)
-    if addOnName == Name then
-        EventRegistry:UnregisterFrameEventAndCallback("ADDON_LOADED", ownerId)
+local function OnLoad()
+    LoadDatabase()
 
-        LoadDatabase()
+    LibStub("AceConfig-3.0"):RegisterOptionsTable(Name, T.Options)
+    LibStub("AceConfigDialog-3.0"):AddToBlizOptions(Name, Name)
 
-        LibStub("AceConfig-3.0"):RegisterOptionsTable(Name, T.Options)
-        LibStub("AceConfigDialog-3.0"):AddToBlizOptions(Name, Name)
-    end
-end
+    T.Icon = LibStub("LibDBIcon-1.0")
 
----@param ownerId number
-local function OnLogin(ownerId)
-    if IsLoggedIn() then
-        EventRegistry:UnregisterFrameEventAndCallback("PLAYER_LOGIN", ownerId)
-
-        T.Icon = LibStub("LibDBIcon-1.0")
-
-        local LDB = LibStub("LibDataBroker-1.1")
-        if LDB then
-            Broker = LDB:NewDataObject(Name, {
-                type = "data source",
-                label = L.WEEKLY_REWARDS,
-                text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
-                icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
-            })
-        end
+    local LDB = LibStub("LibDataBroker-1.1")
+    if LDB then
+        Broker = LDB:NewDataObject(Name, {
+            type = "data source",
+            label = L.WEEKLY_REWARDS,
+            text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
+            icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
+        })
     end
 
-    if C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoW then
+    if (C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoW) and (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE) then
         C_Timer.After(1, Enable)
     end
 end
 
-EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", OnLoad)
-EventRegistry:RegisterFrameEventAndCallback("PLAYER_LOGIN", OnLogin)
+EventUtil.ContinueOnAddOnLoaded(Name, OnLoad)
