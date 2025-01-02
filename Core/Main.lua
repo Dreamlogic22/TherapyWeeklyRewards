@@ -137,12 +137,7 @@ local function SetupActivity(activity)
 end
 
 local function Enable()
-    if UnitLevel("player") ~= GetMaxLevelForLatestExpansion() then
-        EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_LEVEL_UP", Enable)
-        return
-    end
-
-    if not C_WeeklyRewards.IsWeeklyChestRetired() then
+    if not C_WeeklyRewards.IsWeeklyChestRetired() and UnitLevel("player") == GetMaxLevelForLatestExpansion() then
         T.Icon:Register(Name, Broker, T.db.minimap)
 
         SetupActivity(Enum.WeeklyRewardChestThresholdType.Raid)
