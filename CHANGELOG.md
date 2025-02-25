@@ -1,3 +1,7 @@
+### February 25, 2025 ###
+* Update TOC for 11.1.0.
+* Fix error when characters gain a level.
+
 ### December 17, 2024 ###
 * Update TOC for 11.0.7.
 

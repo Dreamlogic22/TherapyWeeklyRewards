@@ -1,6 +1,6 @@
-## Interface: 110007
+## Interface: 110100
 ## Title: |cff33ff99Therapy|r Weekly Rewards
-## Version: 1.53
+## Version: 1.54
 ## SavedVariables: TherapyWeeklyRewardsDB
 ## Author: River
 ## Notes: Data broker for weekly activities progress.
