@@ -1,3 +1,6 @@
+### March 4, 2025 ###
+* Update Catalyst currency to Essence of Kaja'mite for The War Within Season Two.
+
 ### February 25, 2025 ###
 * Update TOC for 11.1.0.
 * Fix error when characters gain a level.

@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.54 (February 25, 2025)
+    Therapy Weekly Rewards 1.55 (March 4, 2025)
 
 ----------------------------------------------------------------------]]
 
@@ -14,7 +14,7 @@ local GREEN_FONT_COLOR = GREEN_FONT_COLOR
 local Activities = {}
 local Broker
 local CatalystCharges = 0
-local CatalystCurrencyId = 2813
+local CatalystCurrencyId = 3116
 local Earned = 0
 local HasRewards = C_WeeklyRewards.HasAvailableRewards
 local Ready = false
