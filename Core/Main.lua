@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.55 (March 4, 2025)
+    Therapy Weekly Rewards 1.55 (April 22, 2025)
 
 ----------------------------------------------------------------------]]
 
@@ -198,7 +198,7 @@ local function OnLoad()
         })
     end
 
-    if (C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoW) and (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE) then
+    if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
         C_Timer.After(1, Enable)
     end
 end

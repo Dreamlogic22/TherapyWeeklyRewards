@@ -1,3 +1,7 @@
+### April 22, 2025 ###
+* Update TOC for 11.1.5.
+* Refactor checks for game environment due to API changes.
+
 ### March 4, 2025 ###
 * Update Catalyst currency to Essence of Kaja'mite for The War Within Season Two.
 
