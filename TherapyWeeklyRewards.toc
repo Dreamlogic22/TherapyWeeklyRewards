@@ -1,4 +1,4 @@
-## Interface: 110105
+## Interface: 110107
 ## Title: |cff33ff99Therapy|r Weekly Rewards
 ## Version: 1.56
 ## SavedVariables: TherapyWeeklyRewardsDB
