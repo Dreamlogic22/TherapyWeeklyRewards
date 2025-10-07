@@ -1,3 +1,6 @@
+### October 7, 2025 ###
+* Upate TOC for 11.2.5.
+
 ### August 12, 2025 ###
 * Upate TOC for 11.2.0.
 * Update Catalyst currenct to Ethereal Voidsplinter for The War Within Season Three.
