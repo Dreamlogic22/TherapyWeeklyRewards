@@ -1,3 +1,6 @@
+### December 3, 2025 ###
+* Upate TOC for 11.2.7.
+
 ### October 7, 2025 ###
 * Upate TOC for 11.2.5.
 
