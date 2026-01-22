@@ -1,3 +1,7 @@
+### January 22, 2026 ###
+* Upate TOC for 12.0.0.
+* Add safeguards for secrets because, you know, your own Vault should _totally_ be secret.
+
 ### December 3, 2025 ###
 * Upate TOC for 11.2.7.
 
