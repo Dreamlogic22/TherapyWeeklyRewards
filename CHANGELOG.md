@@ -1,5 +1,6 @@
 ### February 11, 2026 ###
 * Add Russian locale (Thank you [Hollisch](https://github.com/Hollicsh)!)
+* Fixed a locale loading bug.
 
 ### February 10, 2026 ###
 * Upate TOC for 12.0.1.

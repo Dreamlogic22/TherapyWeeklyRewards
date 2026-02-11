@@ -1,3 +1,7 @@
+-- Contributor: Hollisch
+
+if not (GetLocale() == "ruRU") then return end
+
 ---@type string, TherapyWeeklyRewards
 local _, T = ...
 
