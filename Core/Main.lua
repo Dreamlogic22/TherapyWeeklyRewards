@@ -64,7 +64,6 @@ local function OnEnter(tooltip)
     tooltip:AddLine(WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS, 1, 1, 1)
 end
 
----@param _ any
 ---@param currencyType number
 ---@param quantity number
 local function UpdateCatalyst(_, currencyType, quantity)
