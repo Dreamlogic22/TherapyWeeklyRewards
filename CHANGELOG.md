@@ -1,3 +1,6 @@
+### March 17, 2026 ###
+* Update Catalyst currency to Dawnlight Manaflux for Midnight Season One.
+
 ### February 11, 2026 ###
 * Add Russian locale (Thank you [Hollisch](https://github.com/Hollicsh)!)
 * Fixed a locale loading bug.
