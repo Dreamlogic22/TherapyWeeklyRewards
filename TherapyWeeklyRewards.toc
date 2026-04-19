@@ -1,5 +1,5 @@
 ## Interface: 120001
-## Title: |cff33ff99Therapy|r Weekly Rewards
+## Title: |cff1785d1Therapy|r Weekly Rewards
 ## Version: 1.75
 ## SavedVariables: TherapyWeeklyRewardsDB
 ## Author: River
