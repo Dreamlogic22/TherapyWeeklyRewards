@@ -1,12 +1,12 @@
-## Interface: 120001
+## Interface: 120005
 ## Title: |cff1785d1Therapy|r Weekly Rewards
-## Version: 1.75
+## Version: 1.76
 ## SavedVariables: TherapyWeeklyRewardsDB
 ## Author: River
 ## Notes: Data broker for weekly activities progress.
 ## Notes-ruRU: Позволяет отслеживать Ваш еженедельный прогресс в получении наград из Великого Хранилища и зарядов Катализаторов.
 ## DefaultState: Enabled
-## IconTexture: Interface\AddOns\TherapyWeeklyRewards\Logo
+## IconTexture: Interface\AddOns\TherapyWeeklyRewards\Media\Logo
 
 ## X-Curse-Project-ID: 837049
 ## X-Wago-ID: BKpqzvGE

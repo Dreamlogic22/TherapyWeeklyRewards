@@ -1,3 +1,6 @@
+### April 21, 2026 ###
+* Update TOC for 12.0.5.
+
 ### March 17, 2026 ###
 * Update Catalyst currency to Dawnlight Manaflux for Midnight Season One.
 
