@@ -1,4 +1,4 @@
-## Interface: 120007
+## Interface: 120100
 ## Title: |cff1785d1Therapy|r Weekly Rewards
 ## Version: 1.77
 ## SavedVariables: TherapyWeeklyRewardsDB

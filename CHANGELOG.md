@@ -1,3 +1,6 @@
+### August 11, 2026 ###
+* Update TOC for 12.1.0.
+
 ### June 16, 2026 ###
 * Update TOC for 12.0.7.
 
