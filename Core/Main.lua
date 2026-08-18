@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.78 (August 11, 2026)
+    Therapy Weekly Rewards 1.79 (August 18, 2026)
 
 ----------------------------------------------------------------------]]
 
@@ -14,7 +14,7 @@ local GREEN_FONT_COLOR = GREEN_FONT_COLOR
 local Activities = {}
 local Broker
 local CatalystCharges = 0
-local CatalystCurrencyId = 3378 -- 12.1: Venomblight Manaflux (3465)
+local CatalystCurrencyId = 3465
 local Earned = 0
 local HasRewards = C_WeeklyRewards.HasAvailableRewards
 local Ready = false
