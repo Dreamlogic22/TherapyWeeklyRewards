@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.79 (August 18, 2026)
+    Therapy Weekly Rewards 1.80 (August 18, 2026)
 
 ----------------------------------------------------------------------]]
 
@@ -11,12 +11,14 @@ local L = T.Locale
 local GRAY_FONT_COLOR = GRAY_FONT_COLOR
 local GREEN_FONT_COLOR = GREEN_FONT_COLOR
 
+local HasRewards = C_WeeklyRewards.HasAvailableRewards
+local GetActivities = C_WeeklyRewards.GetActivities
+
 local Activities = {}
 local Broker
 local CatalystCharges = 0
 local CatalystCurrencyId = 3465
 local Earned = 0
-local HasRewards = C_WeeklyRewards.HasAvailableRewards
 local Ready = false
 local ValueColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
 
@@ -83,43 +85,46 @@ local function UpdateRewards()
             return
         end
 
-        local ActivityInfo = C_WeeklyRewards.GetActivities()
-        if ActivityInfo and #ActivityInfo > 0 then
+        local ActivityInfo = GetActivities()
+        if ActivityInfo and next(ActivityInfo) then
             Earned = 0
 
             if not Activities[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString then
                 Activities[Enum.WeeklyRewardChestThresholdType.Raid].ThresholdString = ActivityInfo[Enum.WeeklyRewardChestThresholdType.Raid].raidString or UNKNOWN
             end
 
-            for _, activity in ipairs(ActivityInfo) do
-                local Row = Activities[activity.type][activity.index]
+        for _, activity in ipairs(ActivityInfo) do
+            local Container = Activities[activity.type]
+                if Container then
+                    local Row = Activities[activity.type][activity.index]
 
-                Row.color = GRAY_FONT_COLOR
-                Row.level = activity.level
-                Row.progress = activity.progress
-                Row.textLeft = format(Activities[activity.type].ThresholdString or UNKNOWN, activity.threshold)
-                Row.textRight = format(GENERIC_FRACTION_STRING, activity.progress, activity.threshold)
-                Row.threshold = activity.threshold
-                Row.unlocked = activity.progress >= activity.threshold
+                    Row.color = GRAY_FONT_COLOR
+                    Row.level = activity.level
+                    Row.progress = activity.progress
+                    Row.textLeft = format(Activities[activity.type].ThresholdString or UNKNOWN, activity.threshold)
+                    Row.textRight = format(GENERIC_FRACTION_STRING, activity.progress, activity.threshold)
+                    Row.threshold = activity.threshold
+                    Row.unlocked = activity.progress >= activity.threshold
 
-                if Row.unlocked then
-                    if activity.type == Enum.WeeklyRewardChestThresholdType.Raid then
-                        Row.textRight = DifficultyUtil.GetDifficultyName(activity.level)
-                    elseif activity.type == Enum.WeeklyRewardChestThresholdType.Activities then
-                        Row.textRight = C_WeeklyRewards.GetDifficultyIDForActivityTier(activity.activityTierID) == DifficultyUtil.ID.DungeonHeroic and WEEKLY_REWARDS_HEROIC or format(WEEKLY_REWARDS_MYTHIC, activity.level)
-                    elseif activity.type == Enum.WeeklyRewardChestThresholdType.World then
-                        Row.textRight = GREAT_VAULT_WORLD_TIER:format(activity.level)
+                    if Row.unlocked then
+                        if activity.type == Enum.WeeklyRewardChestThresholdType.Raid then
+                            Row.textRight = DifficultyUtil.GetDifficultyName(activity.level)
+                        elseif activity.type == Enum.WeeklyRewardChestThresholdType.Activities then
+                            Row.textRight = C_WeeklyRewards.GetDifficultyIDForActivityTier(activity.activityTierID) == DifficultyUtil.ID.DungeonHeroic and WEEKLY_REWARDS_HEROIC or format(WEEKLY_REWARDS_MYTHIC, activity.level)
+                        elseif activity.type == Enum.WeeklyRewardChestThresholdType.World then
+                            Row.textRight = GREAT_VAULT_WORLD_TIER:format(activity.level)
+                        end
+
+                        Row.color = GREEN_FONT_COLOR
+
+                        Earned = Earned + 1
                     end
 
-                    Row.color = GREEN_FONT_COLOR
+                    Broker.label = L.WEEKLY_REWARDS
+                    Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), ValueColor)
 
-                    Earned = Earned + 1
+                    Ready = true
                 end
-
-                Broker.label = L.WEEKLY_REWARDS
-                Broker.text = WrapTextInColorCode(format(GENERIC_FRACTION_STRING, Earned, 9), ValueColor)
-
-                Ready = true
             end
         end
     end)

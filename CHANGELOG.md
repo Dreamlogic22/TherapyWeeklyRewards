@@ -1,3 +1,6 @@
+### August 19, 2026 ###
+* Corrected an error due to Blizzard including the new bonus roll currency as a Weekly Reward.
+
 ### August 18, 2026 ###
 * Update Catalyst currency to Venomblight Manaflux for Midnight Season Two.
 
