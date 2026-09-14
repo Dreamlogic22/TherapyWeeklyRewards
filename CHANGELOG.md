@@ -1,3 +1,7 @@
+### September 14, 2026 ###
+* Update libraries.
+* Fix tooltip display issue with Titan Panel.
+
 ### August 19, 2026 ###
 * Corrected an error due to Blizzard including the new bonus roll currency as a Weekly Reward.
 

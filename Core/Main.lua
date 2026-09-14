@@ -1,6 +1,6 @@
 --[[--------------------------------------------------------------------
 
-    Therapy Weekly Rewards 1.80 (August 18, 2026)
+    Therapy Weekly Rewards 1.81 (September 14, 2026)
 
 ----------------------------------------------------------------------]]
 
@@ -148,9 +148,6 @@ local function Enable()
         SetupActivity(Enum.WeeklyRewardChestThresholdType.Activities)
         SetupActivity(Enum.WeeklyRewardChestThresholdType.World)
 
-        Broker.OnClick = OnClick
-        Broker.OnTooltipShow = OnEnter
-
         CatalystCharges = C_CurrencyInfo.GetCurrencyInfo(CatalystCurrencyId).quantity
 
         EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", UpdateCatalyst)
@@ -198,7 +195,9 @@ local function OnLoad()
             type = "data source",
             label = L.WEEKLY_REWARDS,
             text = WrapTextInColorCode(NOT_APPLICABLE, ValueColor),
-            icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]]
+            icon = [[Interface\AddOns\TherapyWeeklyRewards\Media\Vault]],
+            OnClick = OnClick,
+            OnTooltipShow = OnEnter
         })
     end
 
